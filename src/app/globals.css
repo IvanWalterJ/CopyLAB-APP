@@ -1,0 +1,55 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    :root {
+        --background: #0a0a0f;
+        --foreground: #ffffff;
+    }
+}
+
+body {
+    color: var(--foreground);
+    background: var(--background);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    overflow-x: hidden;
+}
+
+::-webkit-scrollbar {
+    width: 4px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+}
+
+textarea::placeholder {
+    color: rgba(255, 255, 255, 0.2);
+}
+
+textarea {
+    font-family: inherit;
+}
+
+@layer utilities {
+    .card-hover {
+        transition: all 0.2s ease;
+    }
+
+    .card-hover:hover {
+        transform: translateY(-2px);
+    }
+
+    .glassmorphism {
+        background: rgba(255, 255, 255, 0.03);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+}
