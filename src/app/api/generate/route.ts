@@ -5,19 +5,19 @@ const apiKey = process.env.GEMINI_API_KEY || "";
 const genAI = new GoogleGenerativeAI(apiKey);
 
 function buildMultiAnglePrompt(data: any) {
-    const { product, audience, objective, mode, selectedFormats, selectedAngles } = data;
-    const modeCtx = mode === "ads"
-        ? "ADS PAGADOS: copy directo, orientado a conversión, CTA claro."
-        : "CONTENIDO ORGÁNICO: conectar, aportar valor, generar engagement genuino.";
+  const { product, audience, objective, mode, selectedFormats, selectedAngles } = data;
+  const modeCtx = mode === "ads"
+    ? "ADS PAGADOS: copy directo, orientado a conversión, CTA claro."
+    : "CONTENIDO ORGÁNICO: conectar, aportar valor, generar engagement genuino.";
 
-    const formatInstructions = selectedFormats.map((fid: string) => {
-        if (fid === "reel") return `- REEL: Hook impactante (máx 2 líneas) + guión fluido de 8-12 líneas con ritmo de video corto`;
-        if (fid === "carrusel") return `- CARRUSEL: Slide 1 (portada gancho), Slides 2-5 (desarrollo), Slide final (CTA)`;
-        if (fid === "estatica") return `- IMAGEN ESTÁTICA: Headline poderoso (máx 8 palabras) + copy de apoyo (2-4 líneas) + CTA`;
-        return "";
-    }).join("\n");
+  const formatInstructions = selectedFormats.map((fid: string) => {
+    if (fid === "reel") return `- REEL: Hook impactante (máx 2 líneas) + guión fluido de 8-12 líneas con ritmo de video corto`;
+    if (fid === "carrusel") return `- CARRUSEL: Slide 1 (portada gancho), Slides 2-5 (desarrollo), Slide final (CTA)`;
+    if (fid === "estatica") return `- IMAGEN ESTÁTICA: Headline poderoso (máx 8 palabras) + copy de apoyo (2-4 líneas) + CTA`;
+    return "";
+  }).join("\n");
 
-    return `Eres un experto copywriter de clase mundial. ${modeCtx}
+  return `Eres un experto copywriter de clase mundial. ${modeCtx}
 
 PRODUCTO: ${product}
 PÚBLICO: ${audience}
@@ -47,9 +47,9 @@ Total piezas: ${selectedAngles.length * selectedFormats.length}`;
 }
 
 function buildHooksPrompt(data: any) {
-    const { product, audience, objective, platform, hookCount } = data;
-    const count = hookCount || 10;
-    return `Eres un experto en crear hooks virales para redes sociales. Genera ${count} hooks irresistibles.
+  const { product, audience, objective, platform, hookCount } = data;
+  const count = hookCount || 10;
+  return `Eres un experto en crear hooks virales para redes sociales. Genera ${count} hooks irresistibles.
 
 PRODUCTO: ${product}
 PÚBLICO: ${audience}
@@ -80,8 +80,8 @@ RESPONDE ÚNICAMENTE con JSON válido (sin markdown):
 }
 
 function buildLandingPrompt(data: any) {
-    const { product, audience, objective, landingType } = data;
-    return `Eres un experto copywriter especializado en páginas de venta de alta conversión. Genera el copy completo para una landing page.
+  const { product, audience, objective, landingType } = data;
+  return `Eres un experto copywriter especializado en páginas de venta de alta conversión. Genera el copy completo para una landing page.
 
 PRODUCTO: ${product}
 PÚBLICO: ${audience}
@@ -113,8 +113,8 @@ RESPONDE ÚNICAMENTE con JSON válido (sin markdown):
 }
 
 function buildVSLPrompt(data: any) {
-    const { product, audience, objective, duration } = data;
-    return `Eres un experto en guiones de VSL (Video Sales Letters) de alta conversión. Genera un guión completo.
+  const { product, audience, objective, duration } = data;
+  return `Eres un experto en guiones de VSL (Video Sales Letters) de alta conversión. Genera un guión completo.
 
 PRODUCTO: ${product}
 PÚBLICO: ${audience}
@@ -147,9 +147,9 @@ RESPONDE ÚNICAMENTE con JSON válido (sin markdown):
 }
 
 function buildEmailPrompt(data: any) {
-    const { product, audience, objective, sequenceLength } = data;
-    const count = sequenceLength || 5;
-    return `Eres un experto en email marketing y secuencias de nurturing. Genera una secuencia de ${count} emails.
+  const { product, audience, objective, sequenceLength } = data;
+  const count = sequenceLength || 5;
+  return `Eres un experto en email marketing y secuencias de nurturing. Genera una secuencia de ${count} emails.
 
 PRODUCTO: ${product}
 PÚBLICO: ${audience}
@@ -184,8 +184,8 @@ RESPONDE ÚNICAMENTE con JSON válido (sin markdown):
 }
 
 function buildAdCopyPrompt(data: any) {
-    const { product, audience, objective, platform } = data;
-    return `Eres un experto en publicidad digital y copywriting para ads pagados. Genera variantes de ad copy profesional.
+  const { product, audience, objective, platform } = data;
+  return `Eres un experto en publicidad digital y copywriting para ads pagados. Genera variantes de ad copy profesional.
 
 PRODUCTO: ${product}
 PÚBLICO: ${audience}  
@@ -221,49 +221,49 @@ RESPONDE ÚNICAMENTE con JSON válido (sin markdown):
 }
 
 export async function POST(req: Request) {
-    try {
-        const body = await req.json();
-        const { module: moduleType, ...data } = body;
+  try {
+    const body = await req.json();
+    const { module: moduleType, ...data } = body;
 
-        let prompt = "";
+    let prompt = "";
 
-        switch (moduleType) {
-            case "hooks":
-                prompt = buildHooksPrompt(data);
-                break;
-            case "multi_angle":
-                prompt = buildMultiAnglePrompt(data);
-                break;
-            case "landing":
-                prompt = buildLandingPrompt(data);
-                break;
-            case "vsl":
-                prompt = buildVSLPrompt(data);
-                break;
-            case "email":
-                prompt = buildEmailPrompt(data);
-                break;
-            case "adcopy":
-                prompt = buildAdCopyPrompt(data);
-                break;
-            default:
-                prompt = buildMultiAnglePrompt(data);
-        }
-
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-        const result = await model.generateContent(prompt);
-        const text = result.response.text();
-
-        // Clean the response - remove markdown code blocks if present
-        const cleaned = text.replace(/```json\s*/gi, "").replace(/```\s*/gi, "").trim();
-        const parsed = JSON.parse(cleaned);
-        return NextResponse.json(parsed);
-
-    } catch (error: any) {
-        console.error("API Error:", error?.message || error);
-        return NextResponse.json(
-            { error: "Error al generar. Revisá la API key o intentá de nuevo.", details: error?.message },
-            { status: 500 }
-        );
+    switch (moduleType) {
+      case "hooks":
+        prompt = buildHooksPrompt(data);
+        break;
+      case "multi_angle":
+        prompt = buildMultiAnglePrompt(data);
+        break;
+      case "landing":
+        prompt = buildLandingPrompt(data);
+        break;
+      case "vsl":
+        prompt = buildVSLPrompt(data);
+        break;
+      case "email":
+        prompt = buildEmailPrompt(data);
+        break;
+      case "adcopy":
+        prompt = buildAdCopyPrompt(data);
+        break;
+      default:
+        prompt = buildMultiAnglePrompt(data);
     }
+
+    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+    const result = await model.generateContent(prompt);
+    const text = result.response.text();
+
+    // Clean the response - remove markdown code blocks if present
+    const cleaned = text.replace(/```json\s*/gi, "").replace(/```\s*/gi, "").trim();
+    const parsed = JSON.parse(cleaned);
+    return NextResponse.json(parsed);
+
+  } catch (error: any) {
+    console.error("API Error:", error?.message || error);
+    return NextResponse.json(
+      { error: "Error al generar. Revisá la API key o intentá de nuevo.", details: error?.message },
+      { status: 500 }
+    );
+  }
 }
