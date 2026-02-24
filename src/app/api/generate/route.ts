@@ -250,19 +250,32 @@ export async function POST(req: Request) {
         prompt = buildMultiAnglePrompt(data);
     }
 
-    const model = genAI.getGenerativeModel({ model: "gemini-3-flash-preview" }); // Compactación de código para asegurar trigger en Vercel.
-    const result = await model.generateContent(prompt);
-    const text = result.response.text();
+    const models = ["gemini-3-flash-preview", "gemini-2.0-flash", "gemini-1.5-flash-latest"];
+    let lastError: any = null;
 
-    // Clean the response - remove markdown code blocks if present
-    const cleaned = text.replace(/```json\s*/gi, "").replace(/```\s*/gi, "").trim();
-    const parsed = JSON.parse(cleaned);
-    return NextResponse.json(parsed);
+    for (const modelName of models) {
+      try {
+        console.log(`Intentando con modelo: ${modelName}`);
+        const model = genAI.getGenerativeModel({ model: modelName });
+        const result = await model.generateContent(prompt);
+        const text = result.response.text();
+
+        const cleaned = text.replace(/```json\s*/gi, "").replace(/```\s*/gi, "").trim();
+        const parsed = JSON.parse(cleaned);
+        return NextResponse.json(parsed);
+      } catch (err: any) {
+        console.error(`Error con modelo ${modelName}:`, err?.message || err);
+        lastError = err;
+        // Continue to next model
+      }
+    }
+
+    throw lastError || new Error("No se pudo generar contenido con ningún modelo.");
 
   } catch (error: any) {
-    console.error("API Error:", error?.message || error);
+    console.error("API Error Final:", error?.message || error);
     return NextResponse.json(
-      { error: "Error al generar. Revisá la API key o intentá de nuevo.", details: error?.message },
+      { error: "Error al generar. Los modelos están saturados. Intentá de nuevo en unos segundos.", details: error?.message },
       { status: 500 }
     );
   }
