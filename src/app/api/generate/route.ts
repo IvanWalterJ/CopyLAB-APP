@@ -250,7 +250,7 @@ export async function POST(req: Request) {
         prompt = buildMultiAnglePrompt(data);
     }
 
-    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+    const model = genAI.getGenerativeModel({ model: "gemini-3-flash-preview" }); // Compactación de código para asegurar trigger en Vercel.
     const result = await model.generateContent(prompt);
     const text = result.response.text();
 
