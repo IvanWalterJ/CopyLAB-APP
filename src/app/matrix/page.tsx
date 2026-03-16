@@ -4,6 +4,7 @@ import { useState } from 'react';
 import ConsciousnessSelector from '@/components/ConsciousnessSelector';
 import { ConsciousnessLevel } from '@/lib/types';
 import { Wand2, Type } from 'lucide-react';
+import ReactMarkdown from 'react-markdown';
 
 const ANGLES = [
   { id: 'identidad', name: 'Identidad Tribal', description: 'Por qué "los nuestros" hacen esto y los demás no.' },
@@ -138,9 +139,11 @@ export default function MatrixPage() {
           </h2>
         </div>
 
-        <div className="flex-1 overflow-y-auto pr-2 custom-scroll relative z-10 font-mono text-sm leading-relaxed text-text-primary whitespace-pre-wrap">
+        <div className="flex-1 overflow-y-auto pr-2 custom-scroll relative z-10 text-sm leading-relaxed text-text-primary">
           {output ? (
-            output
+            <div className="markdown-content">
+              <ReactMarkdown>{output}</ReactMarkdown>
+            </div>
           ) : (
              <div className="h-full flex flex-col items-center justify-center text-text-muted w-3/4 mx-auto text-center space-y-4">
                <div className="w-16 h-16 rounded-full bg-elevated border border-border-subtle flex items-center justify-center shadow-lg">

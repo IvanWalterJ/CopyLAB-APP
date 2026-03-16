@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Wand2, Mail } from 'lucide-react';
+import ReactMarkdown from 'react-markdown';
 import ConsciousnessSelector from '@/components/ConsciousnessSelector';
 import { ConsciousnessLevel } from '@/lib/types';
 
@@ -123,9 +124,11 @@ export default function EmailArchitectPage() {
           </h2>
         </div>
 
-        <div className="flex-1 overflow-y-auto pr-2 custom-scroll relative z-10 font-mono text-sm leading-relaxed text-text-primary whitespace-pre-wrap">
+        <div className="flex-1 overflow-y-auto pr-2 custom-scroll relative z-10 text-sm leading-relaxed text-text-primary">
           {output ? (
-            output
+            <div className="markdown-content">
+              <ReactMarkdown>{output}</ReactMarkdown>
+            </div>
           ) : (
              <div className="h-full flex flex-col items-center justify-center text-text-muted w-3/4 mx-auto text-center space-y-4">
                <div className="w-16 h-16 rounded-full bg-elevated border border-border-subtle flex items-center justify-center shadow-lg">
