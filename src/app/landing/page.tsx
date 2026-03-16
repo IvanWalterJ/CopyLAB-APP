@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Wand2, LayoutTemplate } from 'lucide-react';
+import ReactMarkdown from 'react-markdown';
 
 const LANDING_TYPES = [
   { id: 'vsl', name: 'VSL / Webinar', desc: 'Para productos high-ticket.' },
@@ -16,6 +17,9 @@ export default function LandingArchitectPage() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [output, setOutput] = useState('');
 
+  const cleanMarkdown = (text: string) =>
+    text.replace(/^```(?:markdown)?\n?/i, '').replace(/```\s*$/, '').trim();
+
   const handleGenerate = async () => {
     if (!topic.trim()) return;
     setIsGenerating(true);
@@ -26,7 +30,7 @@ export default function LandingArchitectPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          modulePrompt: `Genera la estructura y el copy completo de una Landing Page tipo "${LANDING_TYPES.find(t=>t.id===type)?.name}" para: "${topic}". \n\nEstructura esperada:\n1. Prehead & Head\n2. Subhead\n3. Agitación de Dolor y Problema (Schwartz)\n4. Introducción de la Solución (Mecanismo)\n5. Bullets Fascinations\n6. Oferta, Precio y Garantía\n7. CTA Final.\n\nFormatea cada sección claramante apoyado en Markdown.`,
+          modulePrompt: `Genera la estructura y el copy completo de una Landing Page tipo "${LANDING_TYPES.find(t=>t.id===type)?.name}" para: "${topic}". \n\nEstructura esperada:\n1. Prehead & Head\n2. Subhead\n3. Agitación de Dolor y Problema (Schwartz)\n4. Introducción de la Solución (Mecanismo)\n5. Bullets Fascinations\n6. Oferta, Precio y Garantía\n7. CTA Final.\n\nFormatea cada sección claramente usando Markdown (## para títulos, **negrita** para énfasis, listas con guiones). IMPORTANTE: Responde SIEMPRE en el mismo idioma en que está escrito el brief del producto. Si el brief está en español, responde en español.`,
           consciousnessLevel: 3, // Default for landing
           brandProfile: null
         }),
@@ -119,9 +123,25 @@ export default function LandingArchitectPage() {
           </h2>
         </div>
 
-        <div className="flex-1 overflow-y-auto pr-2 custom-scroll relative z-10 font-mono text-sm leading-relaxed text-text-primary whitespace-pre-wrap">
+        <div className="flex-1 overflow-y-auto pr-2 custom-scroll relative z-10 text-sm leading-relaxed text-text-primary">
           {output ? (
-            output
+            <ReactMarkdown
+              components={{
+
+                h1: ({ children }) => <h1 className="text-xl font-bold text-text-primary mt-6 mb-2 first:mt-0">{children}</h1>,
+                h2: ({ children }) => <h2 className="text-base font-bold text-brand-primary mt-6 mb-2 first:mt-0 uppercase tracking-wide">{children}</h2>,
+                h3: ({ children }) => <h3 className="text-sm font-semibold text-text-primary mt-4 mb-1">{children}</h3>,
+                p: ({ children }) => <p className="text-text-secondary mb-3 leading-relaxed">{children}</p>,
+                strong: ({ children }) => <strong className="text-text-primary font-semibold">{children}</strong>,
+                ul: ({ children }) => <ul className="space-y-1 mb-3 pl-4">{children}</ul>,
+                ol: ({ children }) => <ol className="space-y-1 mb-3 pl-4 list-decimal">{children}</ol>,
+                li: ({ children }) => <li className="text-text-secondary list-none flex gap-2 items-start before:content-['›'] before:text-brand-primary before:shrink-0">{children}</li>,
+                hr: () => <hr className="border-border-subtle my-5" />,
+                blockquote: ({ children }) => <blockquote className="border-l-2 border-brand-primary pl-4 my-3 text-text-muted italic">{children}</blockquote>,
+              }}
+            >
+              {cleanMarkdown(output)}
+            </ReactMarkdown>
           ) : (
              <div className="h-full flex flex-col items-center justify-center text-text-muted w-3/4 mx-auto text-center space-y-4">
                <div className="w-16 h-16 rounded-full bg-elevated border border-border-subtle flex items-center justify-center shadow-lg">
