@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { Zap, Save, CheckCircle2, AlertCircle, Loader2, Plus, Trash2 } from 'lucide-react';
 import { BrandProfile } from '@/lib/types';
 import { useApp } from '@/lib/context';
@@ -34,6 +35,7 @@ const emptyProfile = (): Partial<BrandProfile> => ({
 
 export default function AvatarBuilder() {
   const { activeBrand, setActiveBrand, brands, refreshBrands } = useApp();
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState<TabId>('business');
   const [profile, setProfile] = useState<Partial<BrandProfile>>(emptyProfile());
   const [saving, setSaving] = useState(false);
@@ -101,9 +103,7 @@ export default function AvatarBuilder() {
   };
 
   const handleNew = () => {
-    setProfile(emptyProfile());
-    setIsNew(true);
-    setActiveTab('business');
+    router.push('/onboarding');
   };
 
   const handleDelete = async () => {
@@ -175,7 +175,7 @@ export default function AvatarBuilder() {
           )}
 
           <button
-            onClick={handleSave}
+            onClick={isNew ? handleNew : handleSave}
             disabled={saving}
             className="flex items-center gap-2 px-5 py-2 bg-brand-primary hover:bg-brand-secondary disabled:opacity-60 text-white rounded-lg font-semibold transition-all shadow-glow-indigo active:scale-95"
           >
