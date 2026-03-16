@@ -1,0 +1,213 @@
+'use client';
+
+import { useState } from 'react';
+import ConsciousnessSelector from '@/components/ConsciousnessSelector';
+import { ConsciousnessLevel } from '@/lib/types';
+import { PlayCircle, Instagram, Twitter, Linkedin, Wand2, Type, AlertCircle } from 'lucide-react';
+import { useApp } from '@/lib/context';
+import ReactMarkdown from 'react-markdown';
+
+const platforms = [
+  { id: 'instagram', icon: Instagram, name: 'Instagram', description: 'Reels / Carruseles' },
+  { id: 'tiktok', icon: PlayCircle, name: 'TikTok', description: 'Video Corto' },
+  { id: 'twitter', icon: Twitter, name: 'Twitter / X', description: 'Hilos Cortos' },
+  { id: 'linkedin', icon: Linkedin, name: 'LinkedIn', description: 'Posts Profesionales' },
+];
+
+export default function HooksPage() {
+  const { activeBrand, refreshCredits } = useApp();
+  const [level, setLevel] = useState<ConsciousnessLevel>(2);
+  const [platform, setPlatform] = useState('instagram');
+  const [topic, setTopic] = useState('');
+  
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [output, setOutput] = useState('');
+  const [error, setError] = useState<string | null>(null);
+
+  const handleGenerate = async () => {
+    if (!topic.trim()) return;
+    
+    setIsGenerating(true);
+    setOutput('');
+    setError(null);
+    
+    try {
+      const response = await fetch('/api/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          modulePrompt: `Genera 5 "frenos de scroll" (Hooks) irresistibles para ${platform} sobre el tema: "${topic}".
+          
+          ESTRUCTURA REQUERIDA:
+          - Usa títulos en negrita para cada opción.
+          - Agrega una breve explicación de *por qué* funciona ese hook bajo la psicología de Eugene Schwartz.
+          - Usa listas con viñetas si es necesario.
+          
+          REGLAS DE ESTILO:
+          1. Sin lenguaje artificial ("Descubre", "En este video").
+          2. Empieza con una declaración fuerte, una pregunta contraintuitiva o un dato chocante.
+          3. El tono debe ser el de un Director Creativo experto.`,
+          consciousnessLevel: level,
+          brandProfile: activeBrand,
+          moduleType: 'hooks'
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Error al conectar con la IA.");
+      }
+
+      if (!response.body) throw new Error("No response string.");
+      
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder("utf-8");
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        setOutput(prev => prev + decoder.decode(value, { stream: true }));
+      }
+      
+      await refreshCredits();
+    } catch (e: unknown) {
+      console.error(e);
+      setError(e instanceof Error ? e.message : "Error generando contenido.");
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(output);
+  };
+
+  return (
+    <div className="max-w-6xl mx-auto h-[calc(100vh-8rem)] flex gap-8">
+      {/* Sidebar: Configurador / Brief */}
+      <div className="w-[400px] flex flex-col gap-6 overflow-y-auto pr-4 subtle-scrollbar custom-scroll pb-12 shrink-0">
+        <div>
+          <h1 className="text-2xl font-bold text-text-primary font-inter mb-1 leading-tight">Hooks Engine</h1>
+          <p className="text-text-secondary text-sm">Frena el scroll de tu audiencia en los primeros 3 segundos.</p>
+        </div>
+
+        <ConsciousnessSelector selectedLevel={level} onSelectLevel={setLevel} />
+
+        <div className="space-y-3">
+          <label className="text-sm font-semibold text-text-primary block">Plataforma</label>
+          <div className="grid grid-cols-2 gap-3">
+            {platforms.map(p => {
+              const Icon = p.icon;
+              const isSelected = platform === p.id;
+              return (
+                <button
+                  key={p.id}
+                  onClick={() => setPlatform(p.id)}
+                  className={`p-3 rounded-xl border text-left transition-all flex items-start gap-3 ${
+                    isSelected ? 'border-brand-primary bg-brand-primary/10' : 'border-border-subtle bg-surface hover:bg-elevated'
+                  }`}
+                >
+                  <Icon size={18} className={isSelected ? 'text-brand-primary' : 'text-text-secondary'} />
+                  <div>
+                    <h5 className={`text-xs font-bold ${isSelected ? 'text-text-primary' : 'text-text-secondary'}`}>{p.name}</h5>
+                    <p className="text-[10px] text-text-muted mt-0.5 leading-tight">{p.description}</p>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="space-y-3">
+          <label className="text-sm font-semibold text-text-primary flex justify-between">
+            <span>¿De qué trata este contenido?</span>
+          </label>
+          <div className="relative">
+            <div className="absolute top-3 left-3 text-text-muted">
+              <Type size={18} />
+            </div>
+            <textarea
+              value={topic}
+              onChange={e => setTopic(e.target.value)}
+              placeholder="Ej: Por qué tu copy actual espanta a los clientes..."
+              rows={4}
+              className="w-full bg-elevated border border-border-subtle rounded-xl px-10 py-3 text-sm text-text-primary focus:outline-none focus:border-brand-primary transition-all resize-none shadow-inner"
+            />
+          </div>
+        </div>
+
+        <button 
+          onClick={handleGenerate}
+          disabled={isGenerating || !topic.trim()}
+          className="w-full py-4 bg-brand-primary hover:bg-brand-secondary disabled:bg-surface disabled:text-text-muted disabled:border-border-subtle text-white rounded-xl font-bold transition-all shadow-glow-indigo flex items-center justify-center gap-2 mt-2 active:scale-[0.98]"
+        >
+          <Wand2 size={20} className={isGenerating ? "animate-spin" : ""} />
+          {isGenerating ? 'Redactando...' : 'Generar Hooks Irresistibles'}
+        </button>
+      </div>
+
+      {/* Renderizado de AI */}
+      <div className="flex-1 bg-surface border border-border-subtle rounded-3xl p-8 flex flex-col relative overflow-hidden shadow-2xl">
+        {/* Decorativo */}
+        <div className="absolute top-0 right-0 w-80 h-80 bg-brand-primary/5 blur-[100px] rounded-full pointer-events-none -translate-x-12 -translate-y-12"></div>
+        <div className="absolute bottom-0 left-0 w-64 h-64 bg-brand-secondary/5 blur-[80px] rounded-full pointer-events-none translate-x-12 translate-y-12"></div>
+
+        <div className="flex items-center justify-between border-b border-border-subtle pb-5 mb-6 relative z-10">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-lg bg-brand-primary/10 flex items-center justify-center">
+               <Wand2 size={18} className="text-brand-primary" />
+            </div>
+            <h2 className="text-lg font-bold text-text-primary">Resultados del Engine</h2>
+          </div>
+          {output && !isGenerating && (
+            <button 
+              onClick={copyToClipboard}
+              className="text-[10px] font-black uppercase tracking-widest text-brand-primary bg-brand-primary/10 px-4 py-2 rounded-lg hover:bg-brand-primary/20 transition-all border border-brand-primary/20 active:scale-95"
+            >
+              Copiar Todo
+            </button>
+          )}
+        </div>
+
+        <div className="flex-1 overflow-y-auto pr-4 custom-scroll relative z-10 font-inter text-sm leading-relaxed text-text-primary">
+          {error && (
+            <div className="flex items-center gap-3 p-4 bg-accent-red/10 border border-accent-red/20 rounded-2xl text-accent-red mb-6 animate-in fade-in slide-in-from-top-2">
+              <AlertCircle size={20} className="flex-shrink-0" />
+              <p className="font-semibold text-sm">{error}</p>
+            </div>
+          )}
+          
+          {output ? (
+            <div className="markdown-content prose prose-invert max-w-none">
+              <ReactMarkdown>{output}</ReactMarkdown>
+            </div>
+          ) : !error && !isGenerating && (
+             <div className="h-full flex flex-col items-center justify-center text-text-muted w-3/4 mx-auto text-center space-y-5">
+               <div className="w-20 h-20 rounded-3xl bg-elevated border border-border-subtle flex items-center justify-center shadow-2xl rotate-3">
+                 <Wand2 size={32} className="text-text-secondary opacity-30" />
+               </div>
+               <div className="space-y-2">
+                 <p className="text-text-primary font-bold text-base">Ingeniería de Atención</p>
+                 <p className="text-xs leading-relaxed">Rellena el brief a la izquierda y CopyLab generará hooks basados en la psicología de los niveles de consciencia.</p>
+               </div>
+             </div>
+          )}
+
+          {isGenerating && (
+            <div className="space-y-6">
+              <div className="markdown-content opacity-50">
+                <ReactMarkdown>{output}</ReactMarkdown>
+              </div>
+              <div className="flex items-center gap-2 justify-center py-8">
+                <div className="w-1.5 h-1.5 bg-brand-primary rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+                <div className="w-1.5 h-1.5 bg-brand-primary rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+                <div className="w-1.5 h-1.5 bg-brand-primary rounded-full animate-bounce"></div>
+                <span className="text-[10px] text-text-muted font-black uppercase tracking-widest ml-2">Pensando como Eugene Schwartz...</span>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}

@@ -1,0 +1,145 @@
+'use client';
+
+import { useState } from 'react';
+import { Wand2, Video } from 'lucide-react';
+import ConsciousnessSelector from '@/components/ConsciousnessSelector';
+import { ConsciousnessLevel } from '@/lib/types';
+
+const VSL_MODES = [
+  { id: 'micro', name: 'Micro VSL (2-3 min)', desc: 'Directo al punto. Tráfico tibio.' },
+  { id: 'standard', name: 'Estándar (8-10 min)', desc: 'Venta de infoproductos / SaaS.' },
+  { id: 'webinar', name: 'Webinar Pitch (20+ min)', desc: 'Venta high-ticket.' }
+];
+
+export default function CinemaVSLPage() {
+  const [level, setLevel] = useState<ConsciousnessLevel>(4);
+  const [mode, setMode] = useState('standard');
+  const [topic, setTopic] = useState('');
+  
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [output, setOutput] = useState('');
+
+  const handleGenerate = async () => {
+    if (!topic.trim()) return;
+    setIsGenerating(true);
+    setOutput('');
+    
+    try {
+      const response = await fetch('/api/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          modulePrompt: `Escribe un guión de Video Sales Letter (VSL) en el formato [${VSL_MODES.find(m=>m.id===mode)?.name}]. \nEl tema central es: ${topic}. \n\nInstrucciones:\n- Separa visualmente la columna de AUDIO (lo que dice) y VIDEO (lo que se ve en pantalla).\n- Agrega notas de dirección de música y ritmo entre corchetes.\n- Mantén la retención alta usando "open loops".\n- Haz que se sienta como un documental cinemático de alta conversión.`,
+          consciousnessLevel: level,
+          brandProfile: null
+        }),
+      });
+
+      if (!response.body) throw new Error("No response string.");
+      
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder("utf-8");
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        setOutput(prev => prev + decoder.decode(value, { stream: true }));
+      }
+    } catch (e) {
+      console.error(e);
+      setOutput("Error generando el guión VSL.");
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  return (
+    <div className="max-w-6xl mx-auto h-[calc(100vh-8rem)] flex gap-8">
+      {/* Sidebar */}
+      <div className="w-[450px] flex flex-col gap-6 overflow-y-auto pr-4 subtle-scrollbar custom-scroll pb-12 shrink-0">
+        <div>
+          <h1 className="text-2xl font-bold text-text-primary font-inter mb-1 flex items-center gap-2">
+            <Video size={24} className="text-brand-primary" />
+            Cinema VSL
+          </h1>
+          <p className="text-text-secondary text-sm">Scripts audiovisuales directos para la venta.</p>
+        </div>
+
+        <ConsciousnessSelector selectedLevel={level} onSelectLevel={setLevel} />
+
+        <div className="space-y-3">
+          <label className="text-sm font-semibold text-text-primary block">Modo y Duración</label>
+          <div className="flex flex-col gap-3">
+            {VSL_MODES.map(m => {
+              const isSelected = mode === m.id;
+              return (
+                <button
+                  key={m.id}
+                  onClick={() => setMode(m.id)}
+                  className={`p-3 rounded-lg border text-left transition-colors flex justify-between items-center ${
+                    isSelected ? 'border-brand-primary bg-brand-primary/10' : 'border-border-subtle bg-surface hover:bg-elevated'
+                  }`}
+                >
+                  <div>
+                    <h5 className={`text-sm font-medium ${isSelected ? 'text-text-primary' : 'text-text-secondary'}`}>{m.name}</h5>
+                  </div>
+                  <span className="text-[10px] text-text-muted text-right max-w-[140px] leading-tight flex-shrink-0">{m.desc}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="space-y-3 flex-1">
+          <label className="text-sm font-semibold text-text-primary block">Trama Principal / Oferta Mímesis</label>
+          <div className="relative h-full flex flex-col">
+            <textarea
+              value={topic}
+              onChange={e => setTopic(e.target.value)}
+              placeholder="Ej: Lanzamiento del curso 'Productividad 10x'. El enfoque es que gestionar el tiempo es mentira, hay que gestionar la energía mental..."
+              className="w-full flex-1 bg-elevated border border-border-subtle rounded-xl p-4 text-sm text-text-primary focus:outline-none focus:border-brand-primary transition-colors resize-none"
+            />
+          </div>
+        </div>
+
+        <button 
+          onClick={handleGenerate}
+          disabled={isGenerating || !topic.trim()}
+          className="w-full py-4 bg-brand-primary hover:bg-brand-secondary disabled:bg-surface disabled:text-text-muted disabled:border disabled:border-border-subtle text-white rounded-xl font-bold transition-all shadow-glow-indigo disabled:shadow-none flex items-center justify-center gap-2 mt-auto"
+        >
+          <Wand2 size={20} className={isGenerating ? "animate-pulse" : ""} />
+          {isGenerating ? 'Escribiendo Guión...' : 'Producir Guión VSL'}
+        </button>
+      </div>
+
+      {/* Renderizado de AI */}
+        <div className="flex-1 bg-surface border border-border-subtle rounded-2xl p-6 flex flex-col relative overflow-hidden shadow-xl">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-brand-primary/10 blur-[100px] rounded-full pointer-events-none -translate-x-12 -translate-y-12"></div>
+        <div className="absolute bottom-0 left-0 w-48 h-48 bg-brand-secondary/10 blur-[80px] rounded-full pointer-events-none translate-x-12 translate-y-12"></div>
+
+        <div className="flex items-center justify-between border-b border-border-subtle pb-4 mb-4 relative z-10">
+          <h2 className="text-lg font-semibold text-text-primary flex items-center gap-2">
+            <Video size={18} className="text-brand-primary" />
+            Scripts Timeline
+          </h2>
+        </div>
+
+        <div className="flex-1 overflow-y-auto pr-2 custom-scroll relative z-10 font-mono text-sm leading-relaxed text-text-primary whitespace-pre-wrap">
+          {output ? (
+            output
+          ) : (
+             <div className="h-full flex flex-col items-center justify-center text-text-muted w-3/4 mx-auto text-center space-y-4">
+               <div className="w-16 h-16 rounded-full bg-elevated border border-border-subtle flex items-center justify-center shadow-lg">
+                 <Video size={28} className="text-text-secondary opacity-50" />
+               </div>
+               <p>Un Video Sales Letter requiere atención perfecta. Construye la columna vertebral de tu oferta en formato guión separando Audio y Video.</p>
+             </div>
+          )}
+          {isGenerating && (
+            <span className="inline-block w-2 h-4 ml-1 bg-brand-primary animate-pulse" />
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}

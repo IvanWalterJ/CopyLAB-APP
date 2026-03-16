@@ -1,101 +1,149 @@
-import Image from "next/image";
+'use client';
+
+import Link from 'next/link';
+import { useApp } from '@/lib/context';
+import {
+  Zap, Grid3X3, FileText, Video, Mail, Megaphone,
+  UserCircle2, Coins, ArrowRight, TrendingUp, Sparkles
+} from 'lucide-react';
+
+const modules = [
+  {
+    href: '/hooks', icon: Zap, label: 'Frenos de Scroll',
+    description: 'Hooks virales que paran el scroll al instante.',
+    color: 'from-brand-primary to-brand-secondary', badge: 'Más usado'
+  },
+  {
+    href: '/matrix', icon: Grid3X3, label: 'Matriz Multi-Ángulo',
+    description: 'Explora 7 ángulos distintos para el mismo producto.',
+    color: 'from-purple-600 to-pink-500', badge: 'Estratégico'
+  },
+  {
+    href: '/landing', icon: FileText, label: 'Landing Architect',
+    description: 'Páginas de conversión de 8 secciones completas.',
+    color: 'from-emerald-500 to-teal-500', badge: 'Alta conversión'
+  },
+  {
+    href: '/vsl', icon: Video, label: 'Cinema VSL',
+    description: 'Guiones de video para ventas con timestamps.',
+    color: 'from-orange-500 to-red-500', badge: 'Video'
+  },
+  {
+    href: '/email', icon: Mail, label: 'Email Architect',
+    description: 'Secuencias de lanzamiento y nutrición que convierten.',
+    color: 'from-sky-500 to-indigo-500', badge: 'Secuencias'
+  },
+  {
+    href: '/ads', icon: Megaphone, label: 'Ad-Spec Ops',
+    description: 'Copy y briefs creativos para Meta, TikTok, Google.',
+    color: 'from-amber-500 to-orange-500', badge: 'Ads'
+  },
+];
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const { activeBrand, credits, userEmail } = useApp();
+  const remaining = credits ? credits.total_credits - credits.used_credits : null;
+  const usedPct = credits ? Math.round((credits.used_credits / credits.total_credits) * 100) : 0;
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  return (
+    <div className="max-w-6xl mx-auto space-y-8">
+      {/* Hero greeting */}
+      <div className="relative overflow-hidden rounded-2xl bg-surface border border-border-subtle p-6 md:p-8">
+        <div className="absolute top-0 right-0 w-72 h-72 bg-brand-primary/10 blur-[80px] rounded-full pointer-events-none" />
+        <div className="relative z-10">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+              <div className="flex items-center gap-2 mb-2">
+                <Sparkles size={16} className="text-accent-amber" />
+                <span className="text-xs font-semibold text-accent-amber uppercase tracking-widest">Sistema Operativo de Copywriting</span>
+              </div>
+              <h1 className="text-2xl md:text-3xl font-black font-inter text-text-primary mb-2">
+                Bienvenido a CopyLab
+                {userEmail && <span className="text-brand-primary">, {userEmail.split('@')[0]}</span>}
+              </h1>
+              <p className="text-text-secondary text-sm max-w-lg">
+                El motor de respuesta directa más inteligente del mercado hispanohablante.
+                Powered by <span className="text-brand-primary font-semibold">Eugene Schwartz + Gemini AI</span>.
+              </p>
+            </div>
+
+            {/* Status cards */}
+            <div className="flex gap-3 flex-shrink-0">
+              {/* Credits Card */}
+              <div className="bg-elevated border border-border-subtle rounded-xl p-4 min-w-[130px] text-center">
+                <Coins size={20} className="text-accent-amber mx-auto mb-1" />
+                <p className="text-2xl font-black text-text-primary">{remaining ?? '--'}</p>
+                <p className="text-[10px] text-text-muted font-semibold uppercase tracking-wider">Créditos</p>
+                {credits && (
+                  <div className="mt-2 w-full h-1 bg-surface rounded-full overflow-hidden">
+                    <div
+                      className={`h-full rounded-full ${usedPct > 80 ? 'bg-accent-red' : 'bg-accent-emerald'}`}
+                      style={{ width: `${100 - usedPct}%` }}
+                    />
+                  </div>
+                )}
+              </div>
+
+              {/* Brand Card */}
+              <div className="bg-elevated border border-border-subtle rounded-xl p-4 min-w-[130px] text-center">
+                <TrendingUp size={20} className="text-brand-primary mx-auto mb-1" />
+                <p className="text-sm font-bold text-text-primary truncate max-w-[100px] mx-auto">
+                  {activeBrand?.name ?? 'Sin perfil'}
+                </p>
+                <p className="text-[10px] text-text-muted font-semibold uppercase tracking-wider mt-0.5">Marca activa</p>
+              </div>
+            </div>
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      </div>
+
+      {/* Avatar CTA: if no brand */}
+      {!activeBrand && (
+        <Link href="/avatar" className="flex items-center justify-between p-5 bg-brand-primary/10 border border-brand-primary/30 rounded-2xl hover:bg-brand-primary/15 transition-all group">
+          <div className="flex items-center gap-4">
+            <div className="w-10 h-10 bg-brand-primary/20 rounded-xl flex items-center justify-center">
+              <UserCircle2 size={20} className="text-brand-primary" />
+            </div>
+            <div>
+              <p className="font-bold text-brand-primary text-sm">Configura tu Avatar Estratégico</p>
+              <p className="text-text-muted text-xs">Sin un perfil de marca, la IA genera copy genérico. Potencia todos los módulos en 3 minutos.</p>
+            </div>
+          </div>
+          <ArrowRight size={18} className="text-brand-primary group-hover:translate-x-1 transition-transform" />
+        </Link>
+      )}
+
+      {/* Modules Grid */}
+      <div>
+        <h2 className="text-sm font-bold text-text-muted uppercase tracking-widest mb-4">Módulos de Generación</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {modules.map(({ href, icon: Icon, label, description, color, badge }) => (
+            <Link
+              key={href}
+              href={href}
+              className="group relative bg-surface border border-border-subtle rounded-2xl p-5 hover:border-brand-primary/50 hover:bg-surface/80 transition-all overflow-hidden"
+            >
+              <div className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-br ${color} opacity-5 blur-2xl rounded-full group-hover:opacity-10 transition-opacity`} />
+              <div className="relative z-10">
+                <div className="flex items-start justify-between mb-3">
+                  <div className={`w-10 h-10 bg-gradient-to-br ${color} rounded-xl flex items-center justify-center shadow-lg`}>
+                    <Icon size={18} className="text-white" />
+                  </div>
+                  <span className="text-[9px] font-black uppercase tracking-widest px-2 py-1 bg-elevated border border-border-subtle rounded-full text-text-muted">
+                    {badge}
+                  </span>
+                </div>
+                <h3 className="font-bold text-text-primary text-sm mb-1 group-hover:text-brand-primary transition-colors">{label}</h3>
+                <p className="text-text-muted text-xs leading-relaxed">{description}</p>
+                <div className="flex items-center gap-1 mt-3 text-text-muted group-hover:text-brand-primary transition-colors">
+                  <span className="text-xs font-semibold">Generar ahora</span>
+                  <ArrowRight size={12} className="group-hover:translate-x-1 transition-transform" />
+                </div>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
