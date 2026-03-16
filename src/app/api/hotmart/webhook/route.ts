@@ -1,14 +1,13 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 
-// Usamos admin client para poder procesar pagos aunque no haya sesion
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY! // IMPORTANTE: Deberás agregar esto en .env
-);
-
 // Map the Hotmart payload depending on version
 export async function POST(req: Request) {
+  // Usamos admin client para poder procesar pagos aunque no haya sesion
+  const supabaseAdmin = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY! // IMPORTANTE: Deberás agregar esto en .env
+  );
   try {
     // Si necesitas validar un token de Hotmart por seguridad (HOTMART_WEBHOOK_TOKEN)
     const hotmartToken = req.headers.get('x-hotmart-hottok');
