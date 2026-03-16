@@ -18,7 +18,7 @@ export default function BrandSelector() {
 
   const handleCreateNew = () => {
     setIsOpen(false);
-    router.push('/avatar');
+    router.push('/onboarding');
   };
 
   const handleRefresh = async () => {

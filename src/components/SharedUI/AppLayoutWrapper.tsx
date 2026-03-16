@@ -11,7 +11,7 @@ export default function AppLayoutWrapper({ children }: { children: React.ReactNo
   const isOnboarding = pathname.startsWith('/onboarding');
 
   if (isAuthPage) {
-    return <>{children}</>;
+    return <div className="flex-1 h-screen overflow-auto">{children}</div>;
   }
 
   if (isOnboarding) {

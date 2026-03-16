@@ -27,7 +27,7 @@ export default function LoginPage({ searchParams }: { searchParams: { message: s
               Correo Electrónico
             </label>
             <input
-              className="w-full rounded-xl px-4 py-3.5 bg-elevated/80 border border-border-subtle focus:outline-none focus:ring-2 focus:ring-brand-primary/50 focus:border-brand-primary placeholder:text-text-muted transition-all text-sm font-medium"
+              className="w-full rounded-xl px-4 py-3.5 bg-elevated border border-border-subtle focus:outline-none focus:ring-2 focus:ring-brand-primary/50 focus:border-brand-primary placeholder:text-text-muted transition-all text-sm font-medium text-white autofill:shadow-[inset_0_0_0_1000px_#12121A] autofill:[color:white]"
               name="email"
               type="email"
               placeholder="tu@agencia.com"
@@ -40,7 +40,7 @@ export default function LoginPage({ searchParams }: { searchParams: { message: s
               Contraseña
             </label>
             <input
-              className="w-full rounded-xl px-4 py-3.5 bg-elevated/80 border border-border-subtle focus:outline-none focus:ring-2 focus:ring-brand-primary/50 focus:border-brand-primary placeholder:text-text-muted transition-all text-sm font-medium"
+              className="w-full rounded-xl px-4 py-3.5 bg-elevated border border-border-subtle focus:outline-none focus:ring-2 focus:ring-brand-primary/50 focus:border-brand-primary placeholder:text-text-muted transition-all text-sm font-medium text-white autofill:shadow-[inset_0_0_0_1000px_#12121A] autofill:[color:white]"
               type="password"
               name="password"
               placeholder="••••••••"

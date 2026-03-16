@@ -168,7 +168,7 @@ function ProfileChips({ items, color }: { items: string[]; color: string }) {
 
 export default function OnboardingPage() {
   const router = useRouter();
-  const { brands, isLoading, refreshBrands, setActiveBrand } = useApp();
+  const { refreshBrands, setActiveBrand } = useApp();
 
   const [appPhase, setAppPhase] = useState<AppPhase>('welcome');
   const [messages, setMessages] = useState<Message[]>([]);
@@ -183,12 +183,7 @@ export default function OnboardingPage() {
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Redirect if already has brands
-  useEffect(() => {
-    if (!isLoading && brands.length > 0) {
-      router.replace('/');
-    }
-  }, [isLoading, brands, router]);
+  // No redirect — users with existing brands can also create new ones via onboarding
 
   // Scroll to bottom on new messages
   useEffect(() => {
