@@ -1,6 +1,8 @@
 'use client';
 
+import { useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useApp } from '@/lib/context';
 import {
   Zap, Grid3X3, FileText, Video, Mail, Megaphone,
@@ -41,8 +43,18 @@ const modules = [
 ];
 
 export default function Home() {
-  const { activeBrand, credits, userEmail } = useApp();
+  const { activeBrand, credits, userEmail, userId, brands, isLoading } = useApp();
+  const router = useRouter();
   const remaining = credits ? credits.total_credits - credits.used_credits : null;
+
+  // Auto-redirect to onboarding if user has no brands
+  useEffect(() => {
+    if (!isLoading && userId && brands.length === 0) {
+      router.replace('/onboarding');
+    }
+  }, [isLoading, userId, brands, router]);
+
+  if (isLoading || (!isLoading && userId && brands.length === 0)) return null;
   const usedPct = credits ? Math.round((credits.used_credits / credits.total_credits) * 100) : 0;
 
   return (

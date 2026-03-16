@@ -18,6 +18,7 @@ interface AppContextType {
   refreshCredits: () => Promise<void>;
   userEmail: string | null;
   userId: string | null;
+  isLoading: boolean;
 }
 
 const AppContext = createContext<AppContextType | null>(null);
@@ -28,6 +29,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [credits, setCredits] = useState<UserCredits | null>(null);
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   const supabase = createClient();
 
@@ -57,11 +59,15 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const init = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        setUserEmail(user.email ?? null);
-        setUserId(user.id);
-        await Promise.all([refreshBrands(), refreshCredits()]);
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          setUserEmail(user.email ?? null);
+          setUserId(user.id);
+          await Promise.all([refreshBrands(), refreshCredits()]);
+        }
+      } finally {
+        setIsLoading(false);
       }
     };
     init();
@@ -77,6 +83,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       refreshCredits,
       userEmail,
       userId,
+      isLoading,
     }}>
       {children}
     </AppContext.Provider>

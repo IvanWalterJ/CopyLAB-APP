@@ -8,9 +8,18 @@ import { AppProvider } from '@/lib/context';
 export default function AppLayoutWrapper({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const isAuthPage = pathname.startsWith('/login') || pathname.startsWith('/auth');
+  const isOnboarding = pathname.startsWith('/onboarding');
 
   if (isAuthPage) {
     return <>{children}</>;
+  }
+
+  if (isOnboarding) {
+    return (
+      <AppProvider>
+        {children}
+      </AppProvider>
+    );
   }
 
   return (
