@@ -1,6 +1,6 @@
 'use client';
 
-import { Settings, User, Bell, CreditCard, Shield } from 'lucide-react';
+import { User, Bell, CreditCard, Shield } from 'lucide-react';
 
 export default function SettingsView() {
   return (

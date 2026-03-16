@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { createClient } from '@/utils/supabase/client';
 import { 
   History, 
@@ -10,7 +10,6 @@ import {
   Copy, 
   Trash2, 
   ChevronRight,
-  ExternalLink,
   Zap,
   Grid3X3,
   Mail,
@@ -29,7 +28,7 @@ interface Generation {
   brand_name?: string;
 }
 
-const moduleInfo: Record<string, { icon: any; color: string; label: string }> = {
+const moduleInfo: Record<string, { icon: React.ElementType; color: string; label: string }> = {
   hooks: { icon: Zap, color: 'text-brand-primary', label: 'Frenos de Scroll' },
   matrix: { icon: Grid3X3, color: 'text-accent-amber', label: 'Matriz Multi-Ángulo' },
   landing: { icon: FileText, color: 'text-accent-emerald', label: 'Landing Architect' },
