@@ -1,21 +1,21 @@
 import { login, signup } from './actions'
-import { Hexagon } from 'lucide-react'
+import Image from 'next/image'
 
 export default function LoginPage({ searchParams }: { searchParams: { message: string } }) {
   return (
     <div className="relative min-h-screen flex items-center justify-center bg-background overflow-hidden selection:bg-brand-primary selection:text-white">
-      
+
       {/* Decorative Background Elements */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-brand-primary opacity-20 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-brand-secondary opacity-15 rounded-full blur-[100px] pointer-events-none translate-x-1/3 -translate-y-1/3" />
-      
+
       {/* Main Glassmorphism Card */}
       <div className="relative z-10 w-full max-w-[420px] mx-auto p-8 sm:p-10 bg-surface/60 backdrop-blur-xl border border-border-subtle rounded-3xl shadow-2xl">
-        
+
         {/* Brand Header */}
         <div className="flex flex-col items-center mb-10 text-center">
-          <div className="h-14 w-14 bg-gradient-to-br from-brand-primary to-brand-secondary rounded-2xl flex items-center justify-center shadow-glow-indigo mb-5">
-            <Hexagon className="text-white w-7 h-7" />
+          <div className="h-16 w-16 rounded-2xl overflow-hidden shadow-glow-indigo mb-5">
+            <Image src="/logo.jpg" alt="CopyLab" width={64} height={64} className="w-full h-full object-cover" />
           </div>
           <h1 className="text-2xl sm:text-3xl font-bold font-inter text-text-primary mb-2 tracking-tight">Ingresa a CopyLab</h1>
           <p className="text-text-secondary text-sm sm:text-base font-medium">Tu sistema operativo de <br/> respuesta directa con IA</p>

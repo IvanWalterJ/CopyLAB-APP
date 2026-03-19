@@ -10,7 +10,7 @@ export default function Header() {
   const remaining = credits ? credits.total_credits - credits.used_credits : null;
 
   return (
-    <header className="h-14 border-b border-border-subtle bg-surface/80 backdrop-blur-md sticky top-0 z-10 px-5 flex items-center justify-between gap-4">
+    <header className="h-14 border-b border-border-subtle bg-surface/80 backdrop-blur-md sticky top-0 z-50 px-5 flex items-center justify-between gap-4">
       <div className="flex items-center gap-3">
         <BrandSelector />
       </div>

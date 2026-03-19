@@ -24,6 +24,7 @@ export interface BrandProfile {
   default_consciousness_level: number; // 1-5 (Schwartz)
   is_active: boolean;
   created_at: number;
+  knowledge_base_text?: string; // Extracted text from uploaded PDFs/DOCX
 }
 
 export type ConsciousnessLevel = 1 | 2 | 3 | 4 | 5;

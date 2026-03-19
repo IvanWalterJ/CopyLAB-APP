@@ -131,6 +131,9 @@ create table if not exists generations (
 alter table generations enable row level security;
 
 -- Policies
-create policy "User owns generations" on generations 
+create policy "User owns generations" on generations
   for all using (auth.uid() = user_id);
+
+-- Migration: Add knowledge base text to brand_profiles (run if upgrading existing DB)
+-- ALTER TABLE brand_profiles ADD COLUMN IF NOT EXISTS knowledge_base_text text;
 

@@ -1,12 +1,14 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useApp } from '@/lib/context';
+import { createClient } from '@/utils/supabase/client';
 import {
   Zap, Grid3X3, FileText, Video, Mail, Megaphone,
-  UserCircle2, Coins, ArrowRight, TrendingUp, Sparkles
+  UserCircle2, Coins, ArrowRight, TrendingUp, Sparkles,
+  BarChart2, Calendar, Trophy
 } from 'lucide-react';
 
 const modules = [
@@ -42,10 +44,27 @@ const modules = [
   },
 ];
 
+const moduleLabels: Record<string, string> = {
+  hooks: 'Frenos de Scroll',
+  matrix: 'Matriz Multi-Ángulo',
+  landing: 'Landing Architect',
+  vsl: 'Cinema VSL',
+  email: 'Email Architect',
+  ads: 'Ad-Spec Ops',
+};
+
+interface GenerationStats {
+  totalCopys: number;
+  copysThisWeek: number;
+  mostUsedModule: string;
+}
+
 export default function Home() {
   const { activeBrand, credits, userEmail, userId, brands, isLoading } = useApp();
   const router = useRouter();
+  const supabase = createClient();
   const remaining = credits ? credits.total_credits - credits.used_credits : null;
+  const [stats, setStats] = useState<GenerationStats | null>(null);
 
   // Auto-redirect to onboarding if user has no brands
   useEffect(() => {
@@ -53,6 +72,31 @@ export default function Home() {
       router.replace('/onboarding');
     }
   }, [isLoading, userId, brands, router]);
+
+  useEffect(() => {
+    if (!userId) return;
+    const fetchStats = async () => {
+      const { data } = await supabase
+        .from('generations')
+        .select('module_type, created_at');
+
+      if (!data) return;
+
+      const oneWeekAgo = new Date();
+      oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+
+      const copysThisWeek = data.filter(g => new Date(g.created_at) >= oneWeekAgo).length;
+
+      const moduleCounts: Record<string, number> = {};
+      data.forEach(g => {
+        moduleCounts[g.module_type] = (moduleCounts[g.module_type] || 0) + 1;
+      });
+      const mostUsedModule = Object.entries(moduleCounts).sort((a, b) => b[1] - a[1])[0]?.[0] || '';
+
+      setStats({ totalCopys: data.length, copysThisWeek, mostUsedModule });
+    };
+    fetchStats();
+  }, [userId]);
 
   if (isLoading || (!isLoading && userId && brands.length === 0)) return null;
   const usedPct = credits ? Math.round((credits.used_credits / credits.total_credits) * 100) : 0;
@@ -108,6 +152,54 @@ export default function Home() {
           </div>
         </div>
       </div>
+
+      {/* Metrics Row */}
+      {stats && (
+        <div>
+          <h2 className="text-sm font-bold text-text-muted uppercase tracking-widest mb-4">Tu Actividad</h2>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div className="bg-surface border border-border-subtle rounded-2xl p-4 flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-brand-primary/10 flex items-center justify-center flex-shrink-0">
+                <BarChart2 size={18} className="text-brand-primary" />
+              </div>
+              <div>
+                <p className="text-xl font-black text-text-primary">{stats.totalCopys}</p>
+                <p className="text-[10px] text-text-muted font-semibold uppercase tracking-wider">Copys generados</p>
+              </div>
+            </div>
+
+            <div className="bg-surface border border-border-subtle rounded-2xl p-4 flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-accent-emerald/10 flex items-center justify-center flex-shrink-0">
+                <Calendar size={18} className="text-accent-emerald" />
+              </div>
+              <div>
+                <p className="text-xl font-black text-text-primary">{stats.copysThisWeek}</p>
+                <p className="text-[10px] text-text-muted font-semibold uppercase tracking-wider">Esta semana</p>
+              </div>
+            </div>
+
+            <div className="bg-surface border border-border-subtle rounded-2xl p-4 flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-accent-amber/10 flex items-center justify-center flex-shrink-0">
+                <Trophy size={18} className="text-accent-amber" />
+              </div>
+              <div>
+                <p className="text-sm font-black text-text-primary leading-tight">{stats.mostUsedModule ? (moduleLabels[stats.mostUsedModule] || stats.mostUsedModule) : '—'}</p>
+                <p className="text-[10px] text-text-muted font-semibold uppercase tracking-wider">Módulo estrella</p>
+              </div>
+            </div>
+
+            <div className="bg-surface border border-border-subtle rounded-2xl p-4 flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-accent-red/10 flex items-center justify-center flex-shrink-0">
+                <Coins size={18} className="text-accent-red" />
+              </div>
+              <div>
+                <p className="text-xl font-black text-text-primary">{credits?.used_credits ?? '—'}</p>
+                <p className="text-[10px] text-text-muted font-semibold uppercase tracking-wider">Créditos usados</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Avatar CTA: if no brand */}
       {!activeBrand && (

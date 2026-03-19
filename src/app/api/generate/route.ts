@@ -40,6 +40,10 @@ function buildConsciousnessLayer(level: number): string {
 function buildBrandLayer(profile: BrandProfile | null): string {
   if (!profile) return 'No hay contexto de marca específico proveído. Genera asumiendo un tono persuasivo pero neutral.';
 
+  const knowledgeSection = profile.knowledge_base_text?.trim()
+    ? `\nBASE DE CONOCIMIENTO ADICIONAL (documentos subidos por el usuario):\n${profile.knowledge_base_text.substring(0, 3000)}\n`
+    : '';
+
   return `
 --- CONTEXTO DE MARCA (OBLIGATORIO) ---
 Marca: ${profile.name} (${profile.industry || 'No especificada'})
@@ -61,7 +65,7 @@ PRODUCTO A VENDER:
 - Transformación principal: ${profile.product_transformation}
 - Mecanismo que hace que funcione: ${profile.product_mechanism}
 - Garantía: ${profile.product_guarantee}
---------------------------------------
+${knowledgeSection}--------------------------------------
 `.trim();
 }
 

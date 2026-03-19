@@ -56,7 +56,7 @@ export default function BrandSelector() {
       </button>
 
       {isOpen && (
-        <div className="absolute top-full left-0 mt-2 w-64 bg-overlay border border-border-subtle rounded-2xl shadow-2xl z-50 overflow-hidden backdrop-blur-xl">
+        <div className="absolute top-full left-0 mt-2 w-64 bg-overlay border border-border-subtle rounded-2xl shadow-2xl z-[100] overflow-hidden backdrop-blur-xl">
           <div className="p-2">
             <p className="text-[10px] font-bold text-text-muted uppercase tracking-widest mb-2 px-2 pt-1">Perfiles de Marca</p>
             

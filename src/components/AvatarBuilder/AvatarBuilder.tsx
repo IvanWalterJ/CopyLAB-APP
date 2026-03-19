@@ -9,12 +9,14 @@ import BusinessStep from './BusinessStep';
 import AvatarStep from './AvatarStep';
 import VoiceStep from './VoiceStep';
 import ProductStep from './ProductStep';
+import DocsStep from './DocsStep';
 
 const TABS = [
   { id: 'business', label: '1. Negocio' },
   { id: 'avatar', label: '2. Avatar Ideal' },
   { id: 'voice', label: '3. Voz y Tono' },
   { id: 'product', label: '4. Producto/Oferta' },
+  { id: 'docs', label: '5. Base de Conocimiento' },
 ] as const;
 
 type TabId = typeof TABS[number]['id'];
@@ -232,6 +234,7 @@ export default function AvatarBuilder() {
         {activeTab === 'avatar' && <AvatarStep profile={profile} updateProfile={updateProfile} />}
         {activeTab === 'voice' && <VoiceStep profile={profile} updateProfile={updateProfile} />}
         {activeTab === 'product' && <ProductStep profile={profile} updateProfile={updateProfile} />}
+        {activeTab === 'docs' && <DocsStep profile={profile} updateProfile={updateProfile} />}
       </div>
 
       {/* Bottom CTA on Mobile */}

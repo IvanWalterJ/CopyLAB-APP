@@ -10,7 +10,10 @@ const ANGLES = [
   { id: 'identidad', name: 'Identidad Tribal', description: 'Por qué "los nuestros" hacen esto y los demás no.' },
   { id: 'miedo', name: 'Miedo al Statu Quo', description: 'El peligro de quedarse igual que ahora.' },
   { id: 'future', name: 'Future Pacing', description: 'Visualizar la vida después de conseguir la transformación.' },
-  { id: 'identidad_negativa', name: 'Enemigo Común', description: 'Contra quién estamos luchando y por qué es su culpa.' }
+  { id: 'identidad_negativa', name: 'Enemigo Común', description: 'Contra quién estamos luchando y por qué es su culpa.' },
+  { id: 'urgencia', name: 'Urgencia y Escasez', description: 'La razón por la que actuar HOY vale más que esperar mañana.' },
+  { id: 'prueba_social', name: 'Prueba Social', description: 'Lo que dicen los que ya cruzaron al otro lado y lograron el resultado.' },
+  { id: 'comparacion', name: 'Comparación Directa', description: 'Por qué somos la mejor opción frente a las alternativas del mercado.' },
 ];
 
 export default function MatrixPage() {

@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { useApp } from '@/lib/context';
 import { createClient } from '@/utils/supabase/client';
@@ -8,13 +9,14 @@ import { useRouter } from 'next/navigation';
 import {
   LayoutDashboard, Zap, Grid3X3, FileText, Video,
   Mail, Megaphone, UserCircle2, Settings, LogOut,
-  ChevronRight, Coins
+  ChevronRight, Coins, Star
 } from 'lucide-react';
 
 const modules = [
   { href: '/', icon: LayoutDashboard, label: 'Dashboard' },
   { href: '/hooks', icon: Zap, label: 'Frenos de Scroll' },
   { href: '/history', icon: FileText, label: 'Historial de Copys' },
+  { href: '/swipe', icon: Star, label: 'Swipe File' },
   { href: '/matrix', icon: Grid3X3, label: 'Matriz Multi-Ángulo' },
   { href: '/landing', icon: FileText, label: 'Landing Architect' },
   { href: '/vsl', icon: Video, label: 'Cinema VSL' },
@@ -42,8 +44,8 @@ export default function Sidebar() {
       {/* Logo */}
       <div className="px-5 py-5 border-b border-border-subtle">
         <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 bg-gradient-to-br from-brand-primary to-brand-secondary rounded-lg flex items-center justify-center shadow-glow-indigo">
-            <span className="text-white font-black text-xs">CL</span>
+          <div className="w-8 h-8 rounded-lg overflow-hidden shadow-glow-indigo flex-shrink-0">
+            <Image src="/logo.jpg" alt="CopyLab" width={32} height={32} className="w-full h-full object-cover" />
           </div>
           <div>
             <h1 className="text-sm font-black font-inter text-text-primary leading-tight">CopyLab</h1>
