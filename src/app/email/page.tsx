@@ -5,6 +5,7 @@ import { Wand2, Mail } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import ConsciousnessSelector from '@/components/ConsciousnessSelector';
 import { ConsciousnessLevel } from '@/lib/types';
+import { useApp } from '@/lib/context';
 
 const EMAIL_TYPES = [
   { id: 'lanzamiento', name: 'Serie Lanzamiento (5 emails)' },
@@ -14,6 +15,7 @@ const EMAIL_TYPES = [
 ];
 
 export default function EmailArchitectPage() {
+  const { activeBrand } = useApp();
   const [level, setLevel] = useState<ConsciousnessLevel>(4);
   const [type, setType] = useState('lanzamiento');
   const [topic, setTopic] = useState('');
@@ -33,7 +35,8 @@ export default function EmailArchitectPage() {
         body: JSON.stringify({
           modulePrompt: `Redacta un flujo de emails estratégico tipo: ${EMAIL_TYPES.find(t=>t.id===type)?.name}. \nEl contexto y oferta es: "${topic}". \n\nInstrucciones:\n- Por CADA email, proporciona al menos 2 opciones de "Subject Line" (A/B testing) con alta tasa de apertura.\n- Escribe el cuerpo del correo de forma altamente persuasiva, natural, sin parecer "plantilla". Usar saltos de carro cortos.\n- Finaliza con un Call To Action (CTA) claro.`,
           consciousnessLevel: level,
-          brandProfile: null
+          brandProfile: activeBrand,
+          moduleType: 'email',
         }),
       });
 

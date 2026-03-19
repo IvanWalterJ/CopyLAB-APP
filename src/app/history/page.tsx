@@ -48,7 +48,7 @@ export default function HistoryPage() {
   const [loading, setLoading] = useState(true);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
-  const [showAllBrands, setShowAllBrands] = useState(false);
+  const [showAllBrands, setShowAllBrands] = useState(true);
   const [savingToSwipe, setSavingToSwipe] = useState(false);
   const [swipeForm, setSwipeForm] = useState<{ title: string; category: string } | null>(null);
   const supabase = createClient();

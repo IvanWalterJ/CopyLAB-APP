@@ -5,6 +5,7 @@ import { Wand2, Video } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import ConsciousnessSelector from '@/components/ConsciousnessSelector';
 import { ConsciousnessLevel } from '@/lib/types';
+import { useApp } from '@/lib/context';
 
 const VSL_MODES = [
   { id: 'micro', name: 'Micro VSL (2-3 min)', desc: 'Directo al punto. Tráfico tibio.' },
@@ -13,6 +14,7 @@ const VSL_MODES = [
 ];
 
 export default function CinemaVSLPage() {
+  const { activeBrand } = useApp();
   const [level, setLevel] = useState<ConsciousnessLevel>(4);
   const [mode, setMode] = useState('standard');
   const [topic, setTopic] = useState('');
@@ -32,7 +34,8 @@ export default function CinemaVSLPage() {
         body: JSON.stringify({
           modulePrompt: `Escribe un guión de Video Sales Letter (VSL) en el formato [${VSL_MODES.find(m=>m.id===mode)?.name}]. \nEl tema central es: ${topic}. \n\nInstrucciones:\n- Separa visualmente la columna de AUDIO (lo que dice) y VIDEO (lo que se ve en pantalla).\n- Agrega notas de dirección de música y ritmo entre corchetes.\n- Mantén la retención alta usando "open loops".\n- Haz que se sienta como un documental cinemático de alta conversión.`,
           consciousnessLevel: level,
-          brandProfile: null
+          brandProfile: activeBrand,
+          moduleType: 'vsl',
         }),
       });
 

@@ -5,6 +5,7 @@ import ConsciousnessSelector from '@/components/ConsciousnessSelector';
 import { ConsciousnessLevel } from '@/lib/types';
 import { Wand2, Type } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
+import { useApp } from '@/lib/context';
 
 const ANGLES = [
   { id: 'identidad', name: 'Identidad Tribal', description: 'Por qué "los nuestros" hacen esto y los demás no.' },
@@ -17,6 +18,7 @@ const ANGLES = [
 ];
 
 export default function MatrixPage() {
+  const { activeBrand } = useApp();
   const [level, setLevel] = useState<ConsciousnessLevel>(3);
   const [topic, setTopic] = useState('');
   const [selectedAngles, setSelectedAngles] = useState<string[]>(['identidad', 'miedo']);
@@ -47,12 +49,13 @@ export default function MatrixPage() {
         body: JSON.stringify({
           modulePrompt: `Genera una "Matriz Multi-Ángulo" (Matrix) sobre el tema/oferta: "${topic}". \nVas a generar un Copy Email/Post persuasivo de 200 palabras por CADA UNO de estos ángulos de venta seleccionados: ${selectedAngles.map(id => ANGLES.find(a => a.id === id)?.name).join(', ')}. \nSepara claramente con el título del Ángulo.`,
           consciousnessLevel: level,
-          brandProfile: null
+          brandProfile: activeBrand,
+          moduleType: 'matrix',
         }),
       });
 
       if (!response.body) throw new Error("No response string.");
-      
+
       const reader = response.body.getReader();
       const decoder = new TextDecoder("utf-8");
 

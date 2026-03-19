@@ -5,6 +5,7 @@ import { Wand2, Megaphone } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import ConsciousnessSelector from '@/components/ConsciousnessSelector';
 import { ConsciousnessLevel } from '@/lib/types';
+import { useApp } from '@/lib/context';
 
 const AD_TYPES = [
   { id: 'meta', name: 'Meta Ads (FB/IG)' },
@@ -13,6 +14,7 @@ const AD_TYPES = [
 ];
 
 export default function AdSpecOpsPage() {
+  const { activeBrand } = useApp();
   const [level, setLevel] = useState<ConsciousnessLevel>(2);
   const [type, setType] = useState('meta');
   const [topic, setTopic] = useState('');
@@ -32,7 +34,8 @@ export default function AdSpecOpsPage() {
         body: JSON.stringify({
           modulePrompt: `Genera 3 opciones de anuncios diferentes (A/B/C) para la plataforma: ${AD_TYPES.find(t=>t.id===type)?.name}. \nEl objetivo creativo es: "${topic}". \n\nInstrucciones vitales:\n- Para cada opción define: "Primary Text / Hook", "Headline (Título corto)", y "Sugerencia Visual (Brief para el diseñador/editor)".\n- Ajusta la longitud y el formato nativo según la plataforma elegida.\n- Tonalidad de respuesta directa, enfocada en Costo de Adquisición bajo.`,
           consciousnessLevel: level,
-          brandProfile: null
+          brandProfile: activeBrand,
+          moduleType: 'ads',
         }),
       });
 

@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Wand2, LayoutTemplate } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
+import { useApp } from '@/lib/context';
 
 const LANDING_TYPES = [
   { id: 'vsl', name: 'VSL / Webinar', desc: 'Para productos high-ticket.' },
@@ -11,6 +12,7 @@ const LANDING_TYPES = [
 ];
 
 export default function LandingArchitectPage() {
+  const { activeBrand } = useApp();
   const [type, setType] = useState('vsl');
   const [topic, setTopic] = useState('');
   
@@ -32,7 +34,8 @@ export default function LandingArchitectPage() {
         body: JSON.stringify({
           modulePrompt: `Genera la estructura y el copy completo de una Landing Page tipo "${LANDING_TYPES.find(t=>t.id===type)?.name}" para: "${topic}". \n\nEstructura esperada:\n1. Prehead & Head\n2. Subhead\n3. Agitación de Dolor y Problema (Schwartz)\n4. Introducción de la Solución (Mecanismo)\n5. Bullets Fascinations\n6. Oferta, Precio y Garantía\n7. CTA Final.\n\nFormatea cada sección claramente usando Markdown (## para títulos, **negrita** para énfasis, listas con guiones). IMPORTANTE: Responde SIEMPRE en el mismo idioma en que está escrito el brief del producto. Si el brief está en español, responde en español.`,
           consciousnessLevel: 3, // Default for landing
-          brandProfile: null
+          brandProfile: activeBrand,
+          moduleType: 'landing',
         }),
       });
 
