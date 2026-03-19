@@ -22,17 +22,111 @@ export default function CinemaVSLPage() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [output, setOutput] = useState('');
 
+  const buildVSLPrompt = (mode: string, topic: string): string => {
+    if (mode === 'micro') {
+      return `Escribe un guión de MICRO VSL (2-3 minutos) para: "${topic}".
+
+Estructura Gary Halbert / Dan Kennedy comprimida:
+1. HOOK DE APERTURA (10 seg): Una declaración que choca. No una pregunta. Una afirmación que rompe el patrón.
+2. PROBLEMA VISCERAL (30 seg): El dolor en sus propias palabras. Específico, no genérico.
+3. AGITACIÓN (20 seg): La consecuencia de no resolver esto hoy.
+4. PROMESA + MECANISMO (30 seg): Qué hace diferente esto y por qué funciona cuando otras cosas fallaron.
+5. PRUEBA SOCIAL FLASH (20 seg): Un resultado específico con nombre o perfil real.
+6. CTA DIRECTO (15 seg): Una sola acción. Sin opciones. Sin ambigüedad.
+
+FORMATO DE GUIÓN:
+- Dos columnas: **AUDIO** | **VIDEO**
+- Notas de dirección musical entre corchetes: [música tensa, ritmo lento]
+- Indicaciones de corte y ritmo visual: [corte rápido], [plano cerrado], [texto en pantalla: "X"]
+- Cada línea de audio máximo 12 palabras (para que quepa en un subtítulo).
+- El guión debe sonar como lo diría un humano real, no como un locutor de radio de los 90.`;
+    }
+
+    if (mode === 'standard') {
+      return `Escribe un guión de VSL ESTÁNDAR (8-10 minutos) para: "${topic}".
+
+Estructura Frank Kern + Russell Brunson "Perfect VSL":
+1. HOOK + OPEN LOOP (45 seg): Empieza en el medio de la acción. Promete revelar algo que no van a escuchar en otro lugar. Deja el loop abierto.
+2. HISTORIA DE ORIGEN (90 seg): El momento en que todo cambió. Específico, sensorial, con el "enemigo" identificado. Técnica Brunson: héroe roto que encuentra el mapa.
+3. PROBLEMA PROFUNDO + AGITACIÓN (60 seg): No el problema obvio, el problema debajo del problema. El que no se atreven a decir en voz alta.
+4. CIERRE DEL OPEN LOOP + MECANISMO ÚNICO (90 seg): Aquí revelan lo que prometiste al inicio. Por qué tu enfoque funciona cuando otros fallaron — el "secreto" específico.
+5. PRUEBA SOCIAL DETALLADA (60 seg): 2-3 historias de transformación con resultados concretos y medibles.
+6. LA OFERTA EN CAPAS — STACK (90 seg): Presenta el producto principal, luego agrega valor capa por capa. Cada capa tiene su precio por separado antes de revelar el precio real.
+7. GARANTÍA BALLSY (30 seg): Una garantía tan fuerte que parece locura. Eso genera confianza.
+8. URGENCIA REAL + CTA (45 seg): Una razón legítima para actuar ahora. Una sola acción a tomar.
+
+FORMATO DE GUIÓN:
+- Dos columnas: **AUDIO** | **VIDEO**
+- Notas musicales y de ritmo entre corchetes
+- Indicaciones de texto en pantalla y gráficas de refuerzo
+- Variaciones de ritmo: lento en emocional, rápido en benefits, pausas dramáticas antes de reveals.`;
+    }
+
+    // mode === 'webinar' — HIGH TICKET
+    return `Escribe un guión de WEBINAR PITCH DE ALTO TICKET (20+ minutos) para: "${topic}".
+
+⚠️ REGLA CRÍTICA DE ALTO TICKET: Este guión NO menciona precio en ningún momento. El objetivo es vender la LLAMADA DE ESTRATEGIA o APLICACIÓN, no el programa. El precio se revela únicamente en la llamada privada de ventas.
+
+Estructura Alex Hormozi / Russell Brunson "Perfect Webinar" para High Ticket:
+
+1. APERTURA Y PROMESA (2-3 min):
+   - Hook con estadística o afirmación contraintuitiva.
+   - La gran promesa: qué van a poder hacer al terminar este webinar.
+   - Razones para quedarse: "Si te quedas hasta el final, vas a ver [X] que nadie más enseña."
+   - Credibilidad anti-guru: no es quién eres, es qué has hecho/visto.
+
+2. HISTORIA DE TRANSFORMACIÓN (3-4 min):
+   - Técnica Brunson: "Hace X tiempo yo estaba en tu misma situación..."
+   - El VILLANO del sistema (por qué el mercado fallaba antes de tu método).
+   - El momento de quiebre. La epifanía. El mapa que cambió todo.
+
+3. CONTENIDO DE VALOR REAL — 3 SECRETOS (8-10 min):
+   - Cada "secreto" destruye una creencia limitante específica.
+   - Secreto 1: Reencuadra el problema (la gente cree X, la realidad es Y).
+   - Secreto 2: Destruye la alternativa más común (por qué lo que están haciendo no funciona).
+   - Secreto 3: Introduce el mecanismo único de tu método como la única salida lógica.
+   - Valor real: que sientan que ya aprendieron algo que vale dinero.
+
+4. TRANSICIÓN A LA OFERTA (2 min):
+   - "Lo que acaban de aprender funciona. Pero hay una razón por la que la mayoría no lo implementa..."
+   - El problema de la implementación: tiempo, contexto, guía experta.
+   - La oferta como el puente natural hacia el resultado prometido.
+
+5. PRESENTACIÓN DEL PROGRAMA (3-4 min):
+   - Nombre del programa/servicio.
+   - Qué incluye (stack de valor detallado, SIN precio por elemento).
+   - La transformación específica que entrega (antes/después concreto).
+   - Quién es el candidato ideal (calificación).
+
+6. PRUEBA SOCIAL (2 min):
+   - 3 historias de clientes con resultados medibles y específicos.
+   - Diferentes perfiles para que cada segmento se identifique.
+
+7. CTA PARA LA LLAMADA / APLICACIÓN (2-3 min):
+   - NO es "compra ahora". Es "el siguiente paso es una conversación de 45 minutos".
+   - Explica qué pasa en la llamada (sin presión, diagnóstico real).
+   - Escasez basada en disponibilidad de agenda, no en precio.
+   - El costo de NO actuar: qué pierde si espera otro mes/año.
+   - Instrucción clara y única: [URL o proceso de aplicación].
+
+FORMATO DE GUIÓN:
+- Dos columnas: **AUDIO** | **VIDEO**
+- Slides sugeridos entre corchetes: [SLIDE: "El 87% de los X hacen esto..."]
+- Notas de energía y ritmo: [tono más íntimo aquí], [pausa de 3 segundos], [sonríe]
+- Indicaciones de interacción: [pedirles que escriban en chat], [encuesta en pantalla]`;
+  };
+
   const handleGenerate = async () => {
     if (!topic.trim()) return;
     setIsGenerating(true);
     setOutput('');
-    
+
     try {
       const response = await fetch('/api/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          modulePrompt: `Escribe un guión de Video Sales Letter (VSL) en el formato [${VSL_MODES.find(m=>m.id===mode)?.name}]. \nEl tema central es: ${topic}. \n\nInstrucciones:\n- Separa visualmente la columna de AUDIO (lo que dice) y VIDEO (lo que se ve en pantalla).\n- Agrega notas de dirección de música y ritmo entre corchetes.\n- Mantén la retención alta usando "open loops".\n- Haz que se sienta como un documental cinemático de alta conversión.`,
+          modulePrompt: buildVSLPrompt(mode, topic),
           consciousnessLevel: level,
           brandProfile: activeBrand,
           moduleType: 'vsl',

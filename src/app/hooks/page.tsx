@@ -36,17 +36,31 @@ export default function HooksPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          modulePrompt: `Genera 5 "frenos de scroll" (Hooks) irresistibles para ${platform} sobre el tema: "${topic}".
-          
-          ESTRUCTURA REQUERIDA:
-          - Usa títulos en negrita para cada opción.
-          - Agrega una breve explicación de *por qué* funciona ese hook bajo la psicología de Eugene Schwartz.
-          - Usa listas con viñetas si es necesario.
-          
-          REGLAS DE ESTILO:
-          1. Sin lenguaje artificial ("Descubre", "En este video").
-          2. Empieza con una declaración fuerte, una pregunta contraintuitiva o un dato chocante.
-          3. El tono debe ser el de un Director Creativo experto.`,
+          modulePrompt: `Genera 5 hooks de alto impacto para ${platform} sobre el tema: "${topic}".
+
+REGLA FUNDAMENTAL: Cada hook debe usar un TIPO DIFERENTE. No repitas el mismo mecanismo psicológico. La variedad es la clave para encontrar el ganador.
+
+**HOOK 1 — AFIRMACIÓN CONTRAINTUITIVA**
+Una declaración que contradice lo que el avatar cree que es verdad. No una pregunta. Una afirmación directa que genera fricción cognitiva inmediata.
+*Por qué funciona (Schwartz):* [Explica el mecanismo psicológico en 1-2 líneas]
+
+**HOOK 2 — DATO ESPECÍFICO QUE INCOMODA**
+Un número, porcentaje, o estadística que hace que la situación actual del avatar se sienta urgente o injusta. Específico, no vago.
+*Por qué funciona:* [Mecanismo]
+
+**HOOK 3 — HISTORIA EN UNA LÍNEA**
+Un micro-relato que coloca al avatar en el medio de una situación familiar y dolorosa antes de que pueda pensar en scrollear. Técnica Halbert: empieza en la acción.
+*Por qué funciona:* [Mecanismo]
+
+**HOOK 4 — LA PREGUNTA QUE NO PUEDEN IGNORAR**
+No cualquier pregunta. Una que toca una inseguridad o deseo que el avatar tiene pero no ha verbalizado. Si se la hacen a sí mismos, se quedan a escuchar la respuesta.
+*Por qué funciona:* [Mecanismo]
+
+**HOOK 5 — EL PATRÓN ROTO**
+Algo que no tiene sentido hasta que sí lo tiene. Puede ser una comparación inesperada, una paradoja aparente, o un formato visual/textual que interrumpe el patrón normal del feed.
+*Por qué funciona:* [Mecanismo]
+
+PARA CADA HOOK: Adapta el formato nativo de ${platform} (longitud, tono, si va en texto, subtítulo de video, caption, o thread). Sé específico con la plataforma — un hook de LinkedIn no funciona en TikTok y viceversa.`,
           consciousnessLevel: level,
           brandProfile: activeBrand,
           moduleType: 'hooks'

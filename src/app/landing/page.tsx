@@ -22,18 +22,127 @@ export default function LandingArchitectPage() {
   const cleanMarkdown = (text: string) =>
     text.replace(/^```(?:markdown)?\n?/i, '').replace(/```\s*$/, '').trim();
 
+  const buildLandingPrompt = (type: string, topic: string): string => {
+    if (type === 'vsl') {
+      // HIGH TICKET: NO PRICE — sell the call/application
+      return `Genera el copy completo de una Landing Page de VSL / Webinar de ALTO TICKET para: "${topic}".
+
+⚠️ REGLA CRÍTICA DE ALTO TICKET: Esta landing page NO muestra precio, NO menciona condiciones económicas, NO tiene sección de "oferta". El único objetivo es calificar al prospecto y llevarlo a VER EL VSL / WEBINAR o SOLICITAR UNA LLAMADA. El precio se revela en la llamada o al final del webinar.
+
+Estructura Russell Brunson "Perfect Webinar Landing" + Cialdini aplicado:
+
+## PRE-HEADER
+(Una línea de credencial de autoridad o dato de prueba social que establece contexto antes del headline. Ej: "Más de 340 [avatares] ya aplicaron este método en los últimos 6 meses.")
+
+## HEADLINE PRINCIPAL
+(La promesa específica y medible. Usa números reales. Evita adjetivos vacíos. Formato: "Cómo [resultado específico] en [tiempo específico] sin [objeción principal]" o una variante que no suene a plantilla.)
+
+## SUBHEAD
+(El mecanismo único en una frase. Por qué esto funciona diferente. No features, el por qué detrás.)
+
+## PARA QUIÉN ES ESTE [WEBINAR/VSL]
+(3-4 bullets de calificación positiva. "Esto es para ti si..." — cada bullet activa identidad tribal.)
+
+## PARA QUIÉN NO ES
+(2-3 bullets de descalificación. Esto genera deseo en quienes SÍ califican y elimina leads malos.)
+
+## LO QUE VAS A DESCUBRIR
+(5-7 bullets de promesas de contenido. No features, sino insights. Formato: "Por qué [creencia común] es la razón por la que la mayoría de [avatar] nunca logra [resultado]...")
+
+## SOBRE [NOMBRE/MARCA]
+(3-4 líneas de credibilidad específica. Resultados concretos. Sin títulos pomposos. Anti-guru pero autoridad real.)
+
+## RESERVA TU LUGAR / SOLICITA TU LLAMADA
+(Solo el formulario o botón. Sin precio. CTA claro y directo.)
+
+## DEBAJO DEL BOTÓN
+(Micro-commitment: "Esta sesión es gratuita / sin compromiso / [garantía de llamada]." + Refuerzo de escasez: "Solo [X] lugares disponibles esta semana.")
+
+Formatea con ## para secciones, **negrita** para énfasis, listas con guiones. Responde en el mismo idioma del brief.`;
+    }
+
+    if (type === 'lead_magnet') {
+      return `Genera el copy completo de una Squeeze Page de alta conversión para captura de emails sobre: "${topic}".
+
+Técnica Gary Bencivenga + Joanna Wiebe para opt-in: La promesa debe ser tan específica y tan irresistible que el visitante sienta que sería un idiota si NO dejara su email.
+
+## HEADLINE
+(Una promesa ultra-específica + elemento de curiosidad. Puede incluir número, tiempo, o dato contraintuitivo. Máximo 10 palabras. No uses "Gratis" como gancho principal — eso atrae leads de baja calidad.)
+
+## SUBHEAD
+(Expande el headline. Quién lo creó, para quién es, y qué hace diferente. 1-2 líneas.)
+
+## 3-4 BULLETS DE FASCINACIÓN
+(Formato Halbert: Lo que van a descubrir, sin revelar el qué exactamente. Crea curiosidad insoportable. Ejemplos: "El error que comete el 94% de [avatar] justo antes de [dolor]..." / "Por qué [solución común] en realidad empeora [problema]...")
+
+## FORMULARIO + CTA
+(Texto del botón: no "Enviar" ni "Suscribirse". Una acción específica alineada a la promesa: "Quiero acceder ahora" / "[Nombre del lead magnet]".)
+
+## MICRO-TEXTO BAJO EL FORMULARIO
+(Política de privacidad en 1 línea coloquial. Ej: "Tu email es tuyo. Odiamos el spam tanto como tú.")
+
+Formatea con ## para secciones, **negrita** para énfasis. Responde en el mismo idioma del brief.`;
+    }
+
+    // type === 'sales_letter' — Long-form with price/offer
+    return `Genera el copy completo de una Carta de Ventas Larga (Long-Form Sales Letter) para: "${topic}".
+
+Técnica combinada Dan Kennedy + Gary Halbert: La carta debe leerse como una conversación directa con un amigo que ya logró el resultado y te explica exactamente cómo. No un folleto. Una carta.
+
+## PREHEAD
+(1 línea de segmentación o credencial. Ej: "Solo para [avatar específico] que ya saben que [situación]...")
+
+## HEADLINE PRINCIPAL
+(La gran promesa con especificidad. Usa el formato más adecuado: curiosidad, promesa directa, o inversión de creencia. NUNCA empieces con el nombre de tu empresa.)
+
+## SUBHEAD
+(Refuerza el headline con el mecanismo: el "por qué esto funciona" en una frase.)
+
+## CARTA DE APERTURA — EL GANCHO EMOCIONAL
+(Párrafo de apertura que crea rapport inmediato. Técnica Halbert: empieza en el medio de una historia relevante al dolor del avatar. "Hace [X tiempo], yo estaba [situación específica frustrante]..." o ataca directamente el punto de dolor con empatía visceral.)
+
+## EL PROBLEMA Y SU VERDADERA CAUSA
+(No el problema obvio. El problema debajo del problema. La raíz que nadie está atacando. Agitación sin exageración, con datos si es posible.)
+
+## LA SOLUCIÓN — EL MECANISMO ÚNICO
+(Por qué tu enfoque es fundamentalmente diferente. El "unfair advantage". Sin revelar precio todavía.)
+
+## 8-10 BULLETS DE FASCINACIÓN
+(Los mejores bullets de Gary Bencivenga: cada uno revela que hay un secreto específico sin decir cuál es. Crean curiosidad insoportable. Formato: "Cómo [resultado] usando solo [mecanismo] — sin [objeción principal]...")
+
+## PRUEBA SOCIAL DETALLADA
+(2-3 testimonios con resultados específicos, nombres, y si es posible, el antes/después medible.)
+
+## LA OFERTA — STACK DE VALOR
+(Presenta el producto principal + bonos en capas. Cada elemento tiene valor propio. Técnica Hormozi: el stack debe hacer que el precio parezca ridículamente bajo antes de revelarlo.)
+
+## PRECIO Y JUSTIFICACIÓN
+(Revela el precio DESPUÉS de haber construido el valor. Justifica por qué es bajo comparado con el valor total. No pidas disculpas por el precio.)
+
+## GARANTÍA SÓLIDA
+(Una garantía tan fuerte que elimina todo el riesgo del comprador. Cuanto más ballsy, más confianza genera.)
+
+## URGENCIA Y ESCASEZ REAL
+(Una razón legítima para actuar hoy. No "oferta por tiempo limitado" sin fundamento. Escasez real de plazas, bonos que desaparecen, o fecha de cierre específica.)
+
+## CTA FINAL + CIERRE
+(Una sola acción. Recuerda el costo de no actuar. Cierra con la visión del futuro que el cliente quiere — future pacing de 2-3 líneas.)
+
+Formatea con ## para secciones, **negrita** para énfasis, listas con guiones. Responde en el mismo idioma del brief.`;
+  };
+
   const handleGenerate = async () => {
     if (!topic.trim()) return;
     setIsGenerating(true);
     setOutput('');
-    
+
     try {
       const response = await fetch('/api/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          modulePrompt: `Genera la estructura y el copy completo de una Landing Page tipo "${LANDING_TYPES.find(t=>t.id===type)?.name}" para: "${topic}". \n\nEstructura esperada:\n1. Prehead & Head\n2. Subhead\n3. Agitación de Dolor y Problema (Schwartz)\n4. Introducción de la Solución (Mecanismo)\n5. Bullets Fascinations\n6. Oferta, Precio y Garantía\n7. CTA Final.\n\nFormatea cada sección claramente usando Markdown (## para títulos, **negrita** para énfasis, listas con guiones). IMPORTANTE: Responde SIEMPRE en el mismo idioma en que está escrito el brief del producto. Si el brief está en español, responde en español.`,
-          consciousnessLevel: 3, // Default for landing
+          modulePrompt: buildLandingPrompt(type, topic),
+          consciousnessLevel: 3,
           brandProfile: activeBrand,
           moduleType: 'landing',
         }),

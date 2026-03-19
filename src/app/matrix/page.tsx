@@ -17,6 +17,92 @@ const ANGLES = [
   { id: 'comparacion', name: 'Comparación Directa', description: 'Por qué somos la mejor opción frente a las alternativas del mercado.' },
 ];
 
+const ANGLE_INSTRUCTIONS: Record<string, string> = {
+  identidad: `**ÁNGULO: IDENTIDAD TRIBAL**
+Técnica: El copy no vende un producto, vende pertenencia a un grupo que ya tiene la identidad deseada.
+Estructura:
+- Abre definiendo al "nosotros" con precisión tribal ("Los que hacemos X no somos los que...")
+- Dibuja la línea entre los que están dentro y los que están fuera — sin atacar a nadie, simplemente separando.
+- Conecta la oferta como el ritual o herramienta que los miembros del grupo usan / usarían.
+- Cierra con una afirmación de identidad que el lector quiera hacer propia.
+Tono: Seguro, íntimo, como hablando con los que "sí entienden".`,
+
+  miedo: `**ÁNGULO: MIEDO AL STATU QUO**
+Técnica: Dan Kennedy "future consequences" — mostrar el camino al que se dirige la persona si no actúa hoy.
+Estructura:
+- Abre con la situación actual del avatar descrita con exactitud (que reconozca su vida).
+- Proyecta esa situación hacia adelante: ¿cómo es su vida en 12 meses si nada cambia? Específico, no genérico.
+- El momento de quiebre: "La única diferencia entre los que cambian y los que no es..."
+- La oferta como la bifurcación en el camino, no como una solución mágica.
+Tono: Serio, empático, sin miedo de incomodar.`,
+
+  future: `**ÁNGULO: FUTURE PACING**
+Técnica: Russell Brunson / Frank Kern — llevar al lector cinematográficamente a la versión de su vida después de conseguir el resultado.
+Estructura:
+- Abre en futuro: "Imagina que son las [hora] del [día] y tú..."  — escena específica y sensorial del resultado deseado.
+- Detalla el "después" con detalles concretos que activan los sentidos (lo que ven, sienten, escuchan en esa vida).
+- Ancla ese futuro a la acción de hoy: "Esa versión de ti tomó una decisión en [mes/año]. Fue cuando decidió..."
+- Cierra con el puente: la oferta como el primer paso hacia esa escena.
+Tono: Cálido, aspiracional, cinematográfico. Sin urgencia artificial.`,
+
+  identidad_negativa: `**ÁNGULO: ENEMIGO COMÚN**
+Técnica: "Us vs. Them" de Gary Halbert — identificar el villano externo que explica por qué el avatar no ha logrado el resultado todavía.
+Estructura:
+- Nombra al enemigo con claridad (sistema, industria, creencia falsa, persona tipo) — no es culpa del avatar.
+- Explica cómo ese enemigo ha estado frenando al avatar sin que lo sepa.
+- El momento de revelación: "Una vez que ves esto, no puedes no verlo..."
+- La oferta como el arma contra ese enemigo, no como un producto.
+Tono: Combativo pero constructivo. Genera indignación productiva, no desesperanza.`,
+
+  urgencia: `**ÁNGULO: URGENCIA Y ESCASEZ**
+Técnica: Cialdini + Kennedy — la urgencia funciona SOLO si la razón es legítima y específica.
+Estructura:
+- Abre con el costo de esperar: lo que pierde por cada semana/mes que no actúa (en términos concretos y medibles).
+- La razón real y específica por la que actuar ahora importa (plazas limitadas, precio que sube, ventana de oportunidad de mercado).
+- Reencuadre: No es presión de venta, es información que el lector merece tener.
+- Cierra con la acción clara y la consecuencia directa de hacerla o no hacerla hoy.
+Tono: Directo, honesto, sin manipulación. La urgencia se explica, no se impone.`,
+
+  prueba_social: `**ÁNGULO: PRUEBA SOCIAL**
+Técnica: Cialdini "Social Proof" + Halbert "specificity sells" — los resultados vagos no convencen, los resultados específicos sí.
+Estructura:
+- Abre con un resultado concreto y medible de alguien que se parece al avatar (mismo punto de partida, misma objeción inicial).
+- Desarrolla brevemente el "antes" de ese cliente/caso — que el lector se identifique con el punto de partida.
+- El "después" con números específicos, tiempo exacto, y detalles reales.
+- Generalización: "Y [nombre] no es el único / la única. En los últimos X meses, [dato agregado]..."
+- Cierra con la implicación: si ellos pudieron desde ese punto, ¿qué impide que el lector lo haga?
+Tono: Objetivo, con evidencia. Deja que los resultados hablen.`,
+
+  comparacion: `**ÁNGULO: COMPARACIÓN DIRECTA**
+Técnica: David Deutsch "competitive reframing" — no atacas a la competencia, demuestras que juegas en una categoría diferente.
+Estructura:
+- Abre reconociendo las alternativas que el avatar ha considerado o probado (muestra que las conoces).
+- Analiza por qué cada alternativa falla para este avatar específico (no "son malas", sino "no están diseñadas para tu situación").
+- Introduce tu mecanismo único como la solución diseñada específicamente para lo que las otras no resuelven.
+- Stack de diferenciadores concretos: no "mejor atención" sino "[X] específico que ninguna otra opción tiene".
+- Cierra con la pregunta implícita: ¿Seguir con lo que no funciona o probar lo que sí?
+Tono: Confiado sin ser arrogante. Objetivo. Que el lector llegue solo a la conclusión.`,
+};
+
+function buildMatrixPrompt(selectedAngles: string[], topic: string): string {
+  const angleBlocks = selectedAngles.map(id => {
+    const angle = ANGLES.find(a => a.id === id);
+    const instructions = ANGLE_INSTRUCTIONS[id] || '';
+    return `---
+## ${angle?.name?.toUpperCase()}
+${instructions}
+
+Ahora escribe el copy de 180-220 palabras para este ángulo sobre: "${topic}".
+El copy puede ser un email, un post, o un fragmento de VSL — elige el formato que mejor potencia este ángulo específico. Indica al inicio qué formato elegiste y por qué.`;
+  }).join('\n\n');
+
+  return `Genera la Matriz Multi-Ángulo para la oferta/tema: "${topic}".
+
+Por cada ángulo seleccionado, recibirás las instrucciones específicas de técnica y estructura. Sigue cada una al pie de la letra. La calidad de cada ángulo depende de qué tan bien apliques la técnica indicada — no generes variaciones genéricas del mismo mensaje, cada ángulo debe sentirse radicalmente diferente en tono, estructura y mecanismo psicológico.
+
+${angleBlocks}`;
+}
+
 export default function MatrixPage() {
   const { activeBrand } = useApp();
   const [level, setLevel] = useState<ConsciousnessLevel>(3);
@@ -47,7 +133,7 @@ export default function MatrixPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          modulePrompt: `Genera una "Matriz Multi-Ángulo" (Matrix) sobre el tema/oferta: "${topic}". \nVas a generar un Copy Email/Post persuasivo de 200 palabras por CADA UNO de estos ángulos de venta seleccionados: ${selectedAngles.map(id => ANGLES.find(a => a.id === id)?.name).join(', ')}. \nSepara claramente con el título del Ángulo.`,
+          modulePrompt: buildMatrixPrompt(selectedAngles, topic),
           consciousnessLevel: level,
           brandProfile: activeBrand,
           moduleType: 'matrix',
