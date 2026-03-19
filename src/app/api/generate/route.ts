@@ -188,17 +188,16 @@ debe estar estrictamente alineado a la TAREA PRINCIPAL. Entrega SOLO el output s
           }
         }
 
-        // Save to History when stream is done (don't wait for response to close)
+        // Save to History — awaited before closing to ensure it runs in serverless
         if (supabaseAdmin) {
-          supabaseAdmin.from('generations').insert({
+          const { error: saveError } = await supabaseAdmin.from('generations').insert({
             user_id: user.id,
             brand_id: brandProfile?.id,
             module_type: moduleType,
-            prompt: finalPrompt,
+            prompt: modulePrompt,
             content: fullText
-          }).then(({ error: saveError }) => {
-             if (saveError) console.error('[History Save Error]:', saveError);
           });
+          if (saveError) console.error('[History Save Error]:', saveError);
         }
 
         controller.close();

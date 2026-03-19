@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Wand2, Megaphone } from 'lucide-react';
+import { Wand2, Megaphone, AlertCircle } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import ConsciousnessSelector from '@/components/ConsciousnessSelector';
 import { ConsciousnessLevel } from '@/lib/types';
@@ -110,13 +110,20 @@ FORMATO: Usa **negrita** para cada campo. Respeta los límites de caracteres ind
 }
 
 export default function AdSpecOpsPage() {
-  const { activeBrand } = useApp();
+  const { activeBrand, refreshCredits } = useApp();
   const [level, setLevel] = useState<ConsciousnessLevel>(2);
   const [type, setType] = useState('meta');
   const [topic, setTopic] = useState('');
   
   const [isGenerating, setIsGenerating] = useState(false);
   const [output, setOutput] = useState('');
+  const [copied, setCopied] = useState(false);
+
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(output);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   const handleGenerate = async () => {
     if (!topic.trim()) return;
@@ -145,6 +152,7 @@ export default function AdSpecOpsPage() {
         if (done) break;
         setOutput(prev => prev + decoder.decode(value, { stream: true }));
       }
+      await refreshCredits();
     } catch (e) {
       console.error(e);
       setOutput("Error generando los Ad Specs.");
@@ -200,7 +208,14 @@ export default function AdSpecOpsPage() {
           </div>
         </div>
 
-        <button 
+        {!activeBrand && (
+          <div className="flex items-center gap-2 p-3 bg-accent-amber/10 border border-accent-amber/20 rounded-xl text-xs text-accent-amber">
+            <AlertCircle size={14} className="flex-shrink-0" />
+            <span>Sin marca activa — el copy se generará sin contexto de marca.</span>
+          </div>
+        )}
+
+        <button
           onClick={handleGenerate}
           disabled={isGenerating || !topic.trim()}
           className="w-full py-4 bg-brand-primary hover:bg-brand-secondary disabled:bg-surface disabled:text-text-muted disabled:border disabled:border-border-subtle text-white rounded-xl font-bold transition-all shadow-glow-indigo disabled:shadow-none flex items-center justify-center gap-2 mt-auto"
@@ -220,6 +235,14 @@ export default function AdSpecOpsPage() {
             <Megaphone size={18} className="text-brand-primary" />
             Creative Specs
           </h2>
+          {output && !isGenerating && (
+            <button
+              onClick={copyToClipboard}
+              className="text-[10px] font-black uppercase tracking-widest text-brand-primary bg-brand-primary/10 px-4 py-2 rounded-lg hover:bg-brand-primary/20 transition-all border border-brand-primary/20 active:scale-95"
+            >
+              {copied ? '¡Copiado!' : 'Copiar Todo'}
+            </button>
+          )}
         </div>
 
         <div className="flex-1 overflow-y-auto pr-2 custom-scroll relative z-10 text-sm leading-relaxed text-text-primary">

@@ -7,8 +7,8 @@ const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
 const jetbrainsMono = JetBrains_Mono({ subsets: ['latin'], variable: '--font-jetbrains-mono' })
 
 export const metadata: Metadata = {
-  title: 'CopyLab v2.0 - IA para Copywriting',
-  description: 'Sistema Operativo de Copywriting impulsado por Gemini 2.0 Flash',
+  title: 'CopyLab — Sistema de Copywriting con IA',
+  description: 'Genera copy de alto impacto con IA. Frenos de scroll, landing pages, VSL, emails y más.',
 }
 
 export default function RootLayout({

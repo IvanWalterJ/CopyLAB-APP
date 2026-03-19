@@ -51,6 +51,7 @@ export default function HistoryPage() {
   const [showAllBrands, setShowAllBrands] = useState(true);
   const [savingToSwipe, setSavingToSwipe] = useState(false);
   const [swipeForm, setSwipeForm] = useState<{ title: string; category: string } | null>(null);
+  const [copied, setCopied] = useState(false);
   const supabase = createClient();
 
   const fetchHistory = useCallback(async () => {
@@ -82,6 +83,8 @@ export default function HistoryPage() {
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
 
   const deleteGeneration = async (id: string, e: React.MouseEvent) => {
@@ -265,7 +268,7 @@ export default function HistoryPage() {
                   className="flex items-center gap-2 px-4 py-2 bg-brand-primary/10 border border-brand-primary/20 rounded-xl text-xs font-bold text-brand-primary hover:bg-brand-primary/20 transition-all active:scale-95"
                 >
                   <Copy size={14} />
-                  Copiar Todo
+                  {copied ? '¡Copiado!' : 'Copiar Todo'}
                 </button>
               </div>
             </div>

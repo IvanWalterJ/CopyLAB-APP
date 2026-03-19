@@ -23,6 +23,7 @@ export default function HooksPage() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [output, setOutput] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
 
   const handleGenerate = async () => {
     if (!topic.trim()) return;
@@ -94,6 +95,8 @@ PARA CADA HOOK: Adapta el formato nativo de ${platform} (longitud, tono, si va e
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(output);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
 
   return (
@@ -150,7 +153,14 @@ PARA CADA HOOK: Adapta el formato nativo de ${platform} (longitud, tono, si va e
           </div>
         </div>
 
-        <button 
+        {!activeBrand && (
+          <div className="flex items-center gap-2 p-3 bg-accent-amber/10 border border-accent-amber/20 rounded-xl text-xs text-accent-amber">
+            <AlertCircle size={14} className="flex-shrink-0" />
+            <span>Sin marca activa — el copy se generará sin contexto de marca.</span>
+          </div>
+        )}
+
+        <button
           onClick={handleGenerate}
           disabled={isGenerating || !topic.trim()}
           className="w-full py-4 bg-brand-primary hover:bg-brand-secondary disabled:bg-surface disabled:text-text-muted disabled:border-border-subtle text-white rounded-xl font-bold transition-all shadow-glow-indigo flex items-center justify-center gap-2 mt-2 active:scale-[0.98]"
@@ -178,7 +188,7 @@ PARA CADA HOOK: Adapta el formato nativo de ${platform} (longitud, tono, si va e
               onClick={copyToClipboard}
               className="text-[10px] font-black uppercase tracking-widest text-brand-primary bg-brand-primary/10 px-4 py-2 rounded-lg hover:bg-brand-primary/20 transition-all border border-brand-primary/20 active:scale-95"
             >
-              Copiar Todo
+              {copied ? '¡Copiado!' : 'Copiar Todo'}
             </button>
           )}
         </div>

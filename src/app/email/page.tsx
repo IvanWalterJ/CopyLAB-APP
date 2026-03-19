@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Wand2, Mail } from 'lucide-react';
+import { Wand2, Mail, AlertCircle } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import ConsciousnessSelector from '@/components/ConsciousnessSelector';
 import { ConsciousnessLevel } from '@/lib/types';
@@ -127,13 +127,20 @@ REGLAS: Párrafos de 1-3 líneas. Máximo 350 palabras en el cuerpo. Que no pare
 }
 
 export default function EmailArchitectPage() {
-  const { activeBrand } = useApp();
+  const { activeBrand, refreshCredits } = useApp();
   const [level, setLevel] = useState<ConsciousnessLevel>(4);
   const [type, setType] = useState('lanzamiento');
   const [topic, setTopic] = useState('');
   
   const [isGenerating, setIsGenerating] = useState(false);
   const [output, setOutput] = useState('');
+  const [copied, setCopied] = useState(false);
+
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(output);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   const handleGenerate = async () => {
     if (!topic.trim()) return;
@@ -162,6 +169,7 @@ export default function EmailArchitectPage() {
         if (done) break;
         setOutput(prev => prev + decoder.decode(value, { stream: true }));
       }
+      await refreshCredits();
     } catch (e) {
       console.error(e);
       setOutput("Error generando la secuencia.");
@@ -217,7 +225,14 @@ export default function EmailArchitectPage() {
           </div>
         </div>
 
-        <button 
+        {!activeBrand && (
+          <div className="flex items-center gap-2 p-3 bg-accent-amber/10 border border-accent-amber/20 rounded-xl text-xs text-accent-amber">
+            <AlertCircle size={14} className="flex-shrink-0" />
+            <span>Sin marca activa — el copy se generará sin contexto de marca.</span>
+          </div>
+        )}
+
+        <button
           onClick={handleGenerate}
           disabled={isGenerating || !topic.trim()}
           className="w-full py-4 bg-brand-primary hover:bg-brand-secondary disabled:bg-surface disabled:text-text-muted disabled:border disabled:border-border-subtle text-white rounded-xl font-bold transition-all shadow-glow-indigo disabled:shadow-none flex items-center justify-center gap-2 mt-auto"
@@ -237,6 +252,14 @@ export default function EmailArchitectPage() {
             <Mail size={18} className="text-brand-primary" />
             Flujo de Output
           </h2>
+          {output && !isGenerating && (
+            <button
+              onClick={copyToClipboard}
+              className="text-[10px] font-black uppercase tracking-widest text-brand-primary bg-brand-primary/10 px-4 py-2 rounded-lg hover:bg-brand-primary/20 transition-all border border-brand-primary/20 active:scale-95"
+            >
+              {copied ? '¡Copiado!' : 'Copiar Todo'}
+            </button>
+          )}
         </div>
 
         <div className="flex-1 overflow-y-auto pr-2 custom-scroll relative z-10 text-sm leading-relaxed text-text-primary">

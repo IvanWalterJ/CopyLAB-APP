@@ -15,7 +15,7 @@ export async function login(formData: FormData) {
   })
 
   if (error) {
-    return redirect('/login?message=Could not authenticate user')
+    return redirect('/login?message=Email o contraseña incorrectos')
   }
 
   return redirect('/')
@@ -41,7 +41,7 @@ export async function signup(formData: FormData) {
   })
 
   if (error) {
-    return redirect('/login?message=Could not authenticate user')
+    return redirect('/login?message=Error al crear la cuenta. Intenta de nuevo.')
   }
 
   // Wait for email or redirect

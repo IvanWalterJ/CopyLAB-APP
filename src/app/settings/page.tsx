@@ -1,8 +1,11 @@
 'use client';
 
 import { User, Bell, CreditCard, Shield } from 'lucide-react';
+import { useApp } from '@/lib/context';
 
 export default function SettingsView() {
+  const { userEmail } = useApp();
+
   return (
     <div className="max-w-4xl mx-auto space-y-8">
       <div>
@@ -44,10 +47,11 @@ export default function SettingsView() {
             <div className="space-y-4">
               <div className="space-y-1.5">
                 <label className="text-xs font-bold text-text-muted uppercase tracking-wider">Correo Electrónico</label>
-                <input 
-                  type="text" 
-                  disabled 
-                  placeholder="usuario@ejemplo.com"
+                <input
+                  type="text"
+                  disabled
+                  value={userEmail ?? ''}
+                  readOnly
                   className="w-full bg-elevated border border-border-subtle rounded-xl px-4 py-2.5 text-sm text-text-secondary cursor-not-allowed"
                 />
               </div>
