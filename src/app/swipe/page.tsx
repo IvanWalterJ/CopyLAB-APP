@@ -69,7 +69,7 @@ export default function SwipePage() {
     setNewItem({ title: '', category: '', content: '' });
   };
 
-  const categories = [...new Set(items.map(i => i.category).filter(Boolean))] as string[];
+  const categories = Array.from(new Set(items.map(i => i.category).filter(Boolean))) as string[];
 
   const filtered = items.filter(i => {
     const matchSearch = !searchQuery ||
