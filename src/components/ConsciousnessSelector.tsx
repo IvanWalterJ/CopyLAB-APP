@@ -2,19 +2,19 @@
 
 import { useState } from 'react';
 import { ConsciousnessLevel } from '@/lib/types';
-import { 
-  EyeOff, 
-  Search, 
-  Target, 
-  ShoppingCart, 
-  CreditCard 
-} from 'lucide-react';
+import {
+  IconEyeOff,
+  IconSearch,
+  IconTarget,
+  IconShoppingCart,
+  IconCreditCard
+} from '@/components/icons';
 
 const LEVELS = [
   {
     level: 1 as ConsciousnessLevel,
     name: "Inconsciente",
-    icon: EyeOff,
+    icon: IconEyeOff,
     color: "text-text-muted",
     bgColor: "bg-surface",
     activeColor: "bg-text-muted/10 border-text-muted",
@@ -24,7 +24,7 @@ const LEVELS = [
   {
     level: 2 as ConsciousnessLevel,
     name: "Consciente del Dolor",
-    icon: Search,
+    icon: IconSearch,
     color: "text-accent-red",
     bgColor: "bg-surface",
     activeColor: "bg-accent-red/10 border-accent-red",
@@ -34,7 +34,7 @@ const LEVELS = [
   {
     level: 3 as ConsciousnessLevel,
     name: "Consciente de Solución",
-    icon: Target,
+    icon: IconTarget,
     color: "text-brand-secondary",
     bgColor: "bg-surface",
     activeColor: "bg-brand-secondary/10 border-brand-secondary",
@@ -44,7 +44,7 @@ const LEVELS = [
   {
     level: 4 as ConsciousnessLevel,
     name: "Consciente del Producto",
-    icon: ShoppingCart,
+    icon: IconShoppingCart,
     color: "text-brand-primary",
     bgColor: "bg-surface",
     activeColor: "bg-brand-primary/10 border-brand-primary",
@@ -54,7 +54,7 @@ const LEVELS = [
   {
     level: 5 as ConsciousnessLevel,
     name: "Más Consciente",
-    icon: CreditCard,
+    icon: IconCreditCard,
     color: "text-accent-emerald",
     bgColor: "bg-surface",
     activeColor: "bg-accent-emerald/10 border-accent-emerald",

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef } from 'react';
-import { Upload, FileText, Trash2, CheckCircle2, Loader2, AlertCircle } from 'lucide-react';
+import { IconUpload, IconDocument, IconTrash, IconCheckCircle, IconLoader, IconAlert } from '@/components/icons';
 import { BrandProfile } from '@/lib/types';
 
 interface Props {
@@ -103,9 +103,9 @@ export default function DocsStep({ profile, updateProfile }: Props) {
           onChange={(e) => { if (e.target.files?.[0]) handleFile(e.target.files[0]); }}
         />
         {uploading ? (
-          <Loader2 size={36} className="text-brand-primary animate-spin mb-3" />
+          <IconLoader size={36} className="text-brand-primary animate-spin mb-3" />
         ) : (
-          <Upload size={36} className="text-text-muted mb-3" />
+          <IconUpload size={36} className="text-text-muted mb-3" />
         )}
         <p className="text-sm font-semibold text-text-primary mb-1">
           {uploading ? 'Procesando documento...' : 'Arrastra un archivo o haz clic para subir'}
@@ -120,7 +120,7 @@ export default function DocsStep({ profile, updateProfile }: Props) {
             ? 'bg-accent-emerald/10 border-accent-emerald/20 text-accent-emerald'
             : 'bg-accent-red/10 border-accent-red/20 text-accent-red'
         }`}>
-          {uploadStatus === 'success' ? <CheckCircle2 size={16} /> : <AlertCircle size={16} />}
+          {uploadStatus === 'success' ? <IconCheckCircle size={16} /> : <IconAlert size={16} />}
           {statusMsg}
         </div>
       )}
@@ -130,14 +130,14 @@ export default function DocsStep({ profile, updateProfile }: Props) {
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <FileText size={14} className="text-brand-primary" />
+              <IconDocument size={14} className="text-brand-primary" />
               <span className="text-sm font-semibold text-text-primary">Conocimiento cargado</span>
             </div>
             <button
               onClick={clearKnowledgeBase}
               className="flex items-center gap-1.5 text-xs text-text-muted hover:text-accent-red transition-colors"
             >
-              <Trash2 size={13} />
+              <IconTrash size={13} />
               Limpiar
             </button>
           </div>
@@ -155,7 +155,7 @@ export default function DocsStep({ profile, updateProfile }: Props) {
 
       {!profile.id && (
         <div className="flex items-center gap-2 p-4 bg-accent-amber/10 border border-accent-amber/20 rounded-xl text-xs text-accent-amber">
-          <AlertCircle size={14} />
+          <IconAlert size={14} />
           Guarda el perfil primero para poder subir documentos.
         </div>
       )}

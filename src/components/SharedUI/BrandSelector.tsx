@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { ChevronDown, Check, Plus, Building2, Loader2 } from 'lucide-react';
+import { IconChevronDown, IconCheck, IconPlus, IconBuilding, IconLoader } from '@/components/icons';
 import { useApp } from '@/lib/context';
 import { useRouter } from 'next/navigation';
 
@@ -36,7 +36,7 @@ export default function BrandSelector() {
         className="flex items-center gap-2.5 bg-surface hover:bg-elevated border border-border-subtle rounded-xl p-2 pr-3 transition-all text-left min-w-[180px] max-w-[220px]"
       >
         <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-brand-primary to-brand-secondary flex items-center justify-center text-white font-bold text-xs flex-shrink-0">
-          {activeBrand ? activeBrand.name.substring(0, 2).toUpperCase() : <Building2 size={14} />}
+          {activeBrand ? activeBrand.name.substring(0, 2).toUpperCase() : <IconBuilding size={14} />}
         </div>
         <div className="flex-1 overflow-hidden">
           {activeBrand ? (
@@ -49,9 +49,9 @@ export default function BrandSelector() {
           )}
         </div>
         {loading ? (
-          <Loader2 size={14} className="text-text-muted animate-spin flex-shrink-0" />
+          <IconLoader size={14} className="text-text-muted animate-spin flex-shrink-0" />
         ) : (
-          <ChevronDown size={14} className={`text-text-muted flex-shrink-0 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+          <IconChevronDown size={14} className={`text-text-muted flex-shrink-0 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
         )}
       </button>
 
@@ -79,7 +79,7 @@ export default function BrandSelector() {
                     {brand.industry && <p className="text-[10px] text-text-muted truncate">{brand.industry}</p>}
                   </div>
                   {activeBrand?.id === brand.id && (
-                    <Check size={14} className="text-brand-primary flex-shrink-0" />
+                    <IconCheck size={14} className="text-brand-primary flex-shrink-0" />
                   )}
                 </button>
               ))
@@ -91,7 +91,7 @@ export default function BrandSelector() {
               onClick={handleCreateNew}
               className="w-full flex items-center gap-2 text-sm font-semibold text-brand-primary hover:bg-brand-primary/10 p-2.5 rounded-xl transition-colors"
             >
-              <Plus size={16} />
+              <IconPlus size={16} />
               Crear Nuevo Perfil
             </button>
           </div>

@@ -4,23 +4,23 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { createClient } from '@/utils/supabase/client';
 import { useApp } from '@/lib/context';
 import {
-  History,
-  Search,
-  Calendar,
-  FileText,
-  Copy,
-  Trash2,
-  ChevronRight,
-  Zap,
-  Grid3X3,
-  Mail,
-  Video,
-  Megaphone,
-  Filter,
-  Star,
-  X,
-  Layers
-} from 'lucide-react';
+  IconHistory,
+  IconSearch,
+  IconCalendar,
+  IconDocument,
+  IconCopy,
+  IconTrash,
+  IconChevronRight,
+  IconBolt,
+  IconGrid,
+  IconMail,
+  IconVideo,
+  IconMegaphone,
+  IconFilter,
+  IconStar,
+  IconX,
+  IconLayers
+} from '@/components/icons';
 import ReactMarkdown from 'react-markdown';
 
 interface Generation {
@@ -34,16 +34,16 @@ interface Generation {
 }
 
 const moduleInfo: Record<string, { icon: React.ElementType; color: string; label: string }> = {
-  hooks: { icon: Zap, color: 'text-brand-primary', label: 'Frenos de Scroll' },
-  matrix: { icon: Grid3X3, color: 'text-accent-amber', label: 'Matriz Multi-Ángulo' },
-  landing: { icon: FileText, color: 'text-accent-emerald', label: 'Landing Architect' },
-  vsl: { icon: Video, color: 'text-brand-secondary', label: 'Cinema VSL' },
-  email: { icon: Mail, color: 'text-brand-primary', label: 'Email Architect' },
-  ads: { icon: Megaphone, color: 'text-accent-red', label: 'Ad-Spec Ops' },
+  hooks: { icon: IconBolt, color: 'text-brand-primary', label: 'Ganchos Irresistibles' },
+  matrix: { icon: IconGrid, color: 'text-accent-amber', label: 'Ángulos de Persuasión' },
+  landing: { icon: IconDocument, color: 'text-accent-emerald', label: 'Página que Vende' },
+  vsl: { icon: IconVideo, color: 'text-brand-secondary', label: 'Guión VSL' },
+  email: { icon: IconMail, color: 'text-brand-primary', label: 'Secuencia de Emails' },
+  ads: { icon: IconMegaphone, color: 'text-accent-red', label: 'Anuncios en Redes' },
 };
 
 export default function HistoryPage() {
-  const { activeBrand } = useApp();
+  const { activeBrand, userId } = useApp();
   const [generations, setGenerations] = useState<Generation[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -103,16 +103,19 @@ export default function HistoryPage() {
   };
 
   const saveToSwipeFile = async () => {
-    if (!selectedGen || !swipeForm) return;
+    if (!selectedGen || !swipeForm || !userId) return;
     setSavingToSwipe(true);
-    await supabase.from('swipe_file').insert({
+    const { error } = await supabase.from('swipe_file').insert({
+      user_id: userId,
       title: swipeForm.title || selectedGen.content.substring(0, 60),
       category: swipeForm.category || 'Sin categoría',
       content: selectedGen.content,
       source: selectedGen.module_type,
     });
     setSavingToSwipe(false);
-    setSwipeForm(null);
+    if (!error) {
+      setSwipeForm(null);
+    }
   };
 
   const selectedGen = generations.find(g => g.id === selectedId);
@@ -129,7 +132,7 @@ export default function HistoryPage() {
         <div className="flex items-center justify-between mb-2">
           <div>
             <h1 className="text-2xl font-bold text-text-primary flex items-center gap-2">
-              <History className="text-brand-primary" size={24} />
+              <IconHistory className="text-brand-primary" size={24} />
               Historial
             </h1>
             <p className="text-text-secondary text-xs uppercase tracking-widest font-bold mt-1">Tus creaciones</p>
@@ -147,7 +150,7 @@ export default function HistoryPage() {
                   : 'bg-surface border-border-subtle text-text-muted hover:text-text-primary'
               }`}
             >
-              <Filter size={11} />
+              <IconFilter size={11} />
               {activeBrand.name}
             </button>
             <button
@@ -158,14 +161,14 @@ export default function HistoryPage() {
                   : 'bg-surface border-border-subtle text-text-muted hover:text-text-primary'
               }`}
             >
-              <Layers size={11} />
+              <IconLayers size={11} />
               Todos los perfiles
             </button>
           </div>
         )}
 
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" size={16} />
+          <IconSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" size={16} />
           <input
             type="text"
             placeholder="Buscar por contenido, marca o módulo..."
@@ -182,7 +185,7 @@ export default function HistoryPage() {
             ))
           ) : filteredGenerations.length === 0 ? (
             <div className="h-64 flex flex-col items-center justify-center text-text-muted bg-surface/30 border border-dashed border-border-subtle rounded-2xl">
-              <History size={40} className="opacity-20 mb-3" />
+              <IconHistory size={40} className="opacity-20 mb-3" />
               <p className="text-sm">No se encontraron registros</p>
               {!showAllBrands && activeBrand && (
                 <button onClick={() => setShowAllBrands(true)} className="mt-2 text-xs text-brand-primary underline">
@@ -192,7 +195,7 @@ export default function HistoryPage() {
             </div>
           ) : (
             filteredGenerations.map(gen => {
-              const info = moduleInfo[gen.module_type] || { icon: FileText, color: 'text-text-secondary', label: gen.module_type };
+              const info = moduleInfo[gen.module_type] || { icon: IconDocument, color: 'text-text-secondary', label: gen.module_type };
               const Icon = info.icon;
               return (
                 <div
@@ -226,7 +229,7 @@ export default function HistoryPage() {
                     onClick={(e) => deleteGeneration(gen.id, e)}
                     className="absolute top-4 right-4 p-1.5 text-text-muted hover:text-accent-red opacity-0 group-hover:opacity-100 transition-opacity"
                   >
-                    <Trash2 size={14} />
+                    <IconTrash size={14} />
                   </button>
                 </div>
               );
@@ -236,22 +239,22 @@ export default function HistoryPage() {
       </div>
 
       {/* Preview Area */}
-      <div className="flex-1 bg-surface border border-border-subtle rounded-3xl p-8 flex flex-col relative overflow-hidden shadow-2xl">
+      <div className="flex-1 glass border border-border-glass rounded-3xl p-8 flex flex-col relative overflow-hidden shadow-elevated">
         {selectedGen ? (
           <>
             <div className="flex items-center justify-between border-b border-border-subtle pb-5 mb-6">
               <div className="flex items-center gap-4">
                 <div className={`p-3 rounded-2xl bg-elevated border border-border-subtle ${moduleInfo[selectedGen.module_type]?.color || 'text-text-primary'}`}>
                   {(() => {
-                    const Icon = moduleInfo[selectedGen.module_type]?.icon || FileText;
+                    const Icon = moduleInfo[selectedGen.module_type]?.icon || IconDocument;
                     return <Icon size={24} />;
                   })()}
                 </div>
                 <div>
                   <h2 className="text-xl font-bold text-text-primary">{moduleInfo[selectedGen.module_type]?.label || 'Generación'}</h2>
                   <div className="flex items-center gap-3 mt-1 text-xs text-text-muted">
-                    <span className="flex items-center gap-1"><Calendar size={12} /> {new Date(selectedGen.created_at).toLocaleString()}</span>
-                    {selectedGen.brand_name && <span className="flex items-center gap-1 font-bold text-brand-primary"><ChevronRight size={10} /> {selectedGen.brand_name}</span>}
+                    <span className="flex items-center gap-1"><IconCalendar size={12} /> {new Date(selectedGen.created_at).toLocaleString()}</span>
+                    {selectedGen.brand_name && <span className="flex items-center gap-1 font-bold text-brand-primary"><IconChevronRight size={10} /> {selectedGen.brand_name}</span>}
                   </div>
                 </div>
               </div>
@@ -260,14 +263,14 @@ export default function HistoryPage() {
                   onClick={() => setSwipeForm(swipeForm ? null : { title: '', category: '' })}
                   className="flex items-center gap-2 px-4 py-2 bg-accent-amber/10 border border-accent-amber/20 rounded-xl text-xs font-bold text-accent-amber hover:bg-accent-amber/20 transition-all active:scale-95"
                 >
-                  <Star size={14} />
+                  <IconStar size={14} />
                   Swipe File
                 </button>
                 <button
                   onClick={() => copyToClipboard(selectedGen.content)}
                   className="flex items-center gap-2 px-4 py-2 bg-brand-primary/10 border border-brand-primary/20 rounded-xl text-xs font-bold text-brand-primary hover:bg-brand-primary/20 transition-all active:scale-95"
                 >
-                  <Copy size={14} />
+                  <IconCopy size={14} />
                   {copied ? '¡Copiado!' : 'Copiar Todo'}
                 </button>
               </div>
@@ -300,7 +303,7 @@ export default function HistoryPage() {
                   {savingToSwipe ? 'Guardando...' : 'Guardar'}
                 </button>
                 <button onClick={() => setSwipeForm(null)} className="p-2 text-text-muted hover:text-text-primary">
-                  <X size={16} />
+                  <IconX size={16} />
                 </button>
               </div>
             )}
@@ -313,7 +316,7 @@ export default function HistoryPage() {
               {selectedGen.prompt && (
                 <div className="mt-12 p-6 bg-elevated/50 border border-border-subtle rounded-2xl">
                   <h4 className="text-xs font-black uppercase tracking-widest text-text-muted mb-3 flex items-center gap-2">
-                    <Filter size={12} /> Configuración del Prompt
+                    <IconFilter size={12} /> Configuración del Prompt
                   </h4>
                   <p className="text-xs text-text-muted font-mono whitespace-pre-wrap leading-relaxed italic">
                     {selectedGen.prompt}
@@ -324,8 +327,8 @@ export default function HistoryPage() {
           </>
         ) : (
           <div className="h-full flex flex-col items-center justify-center text-center space-y-6">
-            <div className="w-24 h-24 rounded-[2rem] bg-elevated border border-border-subtle flex items-center justify-center shadow-inner scale-110">
-              <History size={40} className="text-text-muted opacity-30" />
+            <div className="w-24 h-24 rounded-[2rem] bg-elevated border border-border-subtle flex items-center justify-center shadow-inner scale-110 animate-glow-pulse">
+              <IconHistory size={40} className="text-text-muted opacity-30" />
             </div>
             <div className="space-y-2">
               <h3 className="text-xl font-bold text-text-primary">Visor de Copywriting</h3>

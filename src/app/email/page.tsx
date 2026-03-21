@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { Wand2, Mail, AlertCircle } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { IconWand, IconMail, IconAlert, IconRefresh } from '@/components/icons';
 import ReactMarkdown from 'react-markdown';
 import ConsciousnessSelector from '@/components/ConsciousnessSelector';
 import { ConsciousnessLevel } from '@/lib/types';
@@ -178,13 +178,26 @@ export default function EmailArchitectPage() {
     }
   };
 
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+        e.preventDefault();
+        if (!isGenerating) {
+          handleGenerate();
+        }
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [handleGenerate, isGenerating]);
+
   return (
     <div className="max-w-6xl mx-auto h-[calc(100vh-8rem)] flex gap-8">
       {/* Sidebar */}
       <div className="w-[450px] flex flex-col gap-6 overflow-y-auto pr-4 subtle-scrollbar custom-scroll pb-12 shrink-0">
         <div>
           <h1 className="text-2xl font-bold text-text-primary font-inter mb-1 flex items-center gap-2">
-            <Mail size={24} className="text-brand-primary" />
+            <IconMail size={24} className="text-brand-primary" />
             Email Architect
           </h1>
           <p className="text-text-secondary text-sm">Convierte tu lista de contactos en compradores activos.</p>
@@ -227,7 +240,7 @@ export default function EmailArchitectPage() {
 
         {!activeBrand && (
           <div className="flex items-center gap-2 p-3 bg-accent-amber/10 border border-accent-amber/20 rounded-xl text-xs text-accent-amber">
-            <AlertCircle size={14} className="flex-shrink-0" />
+            <IconAlert size={14} className="flex-shrink-0" />
             <span>Sin marca activa — el copy se generará sin contexto de marca.</span>
           </div>
         )}
@@ -237,28 +250,37 @@ export default function EmailArchitectPage() {
           disabled={isGenerating || !topic.trim()}
           className="w-full py-4 bg-brand-primary hover:bg-brand-secondary disabled:bg-surface disabled:text-text-muted disabled:border disabled:border-border-subtle text-white rounded-xl font-bold transition-all shadow-glow-indigo disabled:shadow-none flex items-center justify-center gap-2 mt-auto"
         >
-          <Wand2 size={20} className={isGenerating ? "animate-pulse" : ""} />
+          <IconWand size={20} className={isGenerating ? "animate-pulse" : ""} />
           {isGenerating ? 'Enviando brief...' : 'Orquestar Flujo de Emails'}
         </button>
       </div>
 
       {/* Renderizado de AI */}
-        <div className="flex-1 bg-surface border border-border-subtle rounded-2xl p-6 flex flex-col relative overflow-hidden shadow-xl">
+        <div className="flex-1 glass border border-border-glass rounded-2xl p-6 flex flex-col relative overflow-hidden shadow-elevated">
         <div className="absolute top-0 right-0 w-64 h-64 bg-brand-primary/10 blur-[100px] rounded-full pointer-events-none -translate-x-12 -translate-y-12"></div>
         <div className="absolute bottom-0 left-0 w-48 h-48 bg-brand-secondary/10 blur-[80px] rounded-full pointer-events-none translate-x-12 translate-y-12"></div>
 
         <div className="flex items-center justify-between border-b border-border-subtle pb-4 mb-4 relative z-10">
           <h2 className="text-lg font-semibold text-text-primary flex items-center gap-2">
-            <Mail size={18} className="text-brand-primary" />
+            <IconMail size={18} className="text-brand-primary" />
             Flujo de Output
           </h2>
           {output && !isGenerating && (
-            <button
-              onClick={copyToClipboard}
-              className="text-[10px] font-black uppercase tracking-widest text-brand-primary bg-brand-primary/10 px-4 py-2 rounded-lg hover:bg-brand-primary/20 transition-all border border-brand-primary/20 active:scale-95"
-            >
-              {copied ? '¡Copiado!' : 'Copiar Todo'}
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={handleGenerate}
+                className="text-[10px] font-black uppercase tracking-widest text-text-secondary bg-surface px-4 py-2 rounded-lg hover:bg-elevated transition-all border border-border-subtle active:scale-95 flex items-center gap-1.5"
+              >
+                <IconRefresh size={12} />
+                Regenerar
+              </button>
+              <button
+                onClick={copyToClipboard}
+                className="text-[10px] font-black uppercase tracking-widest text-brand-primary bg-brand-primary/10 px-4 py-2 rounded-lg hover:bg-brand-primary/20 transition-all border border-brand-primary/20 active:scale-95"
+              >
+                {copied ? '¡Copiado!' : 'Copiar Todo'}
+              </button>
+            </div>
           )}
         </div>
 
@@ -270,7 +292,7 @@ export default function EmailArchitectPage() {
           ) : (
              <div className="h-full flex flex-col items-center justify-center text-text-muted w-3/4 mx-auto text-center space-y-4">
                <div className="w-16 h-16 rounded-full bg-elevated border border-border-subtle flex items-center justify-center shadow-lg">
-                 <Mail size={28} className="text-text-secondary opacity-50" />
+                 <IconMail size={28} className="text-text-secondary opacity-50" />
                </div>
                <p>Los correos requieren A/B Testing, alta empatía y saltos de carro como un marketer legendario.</p>
              </div>

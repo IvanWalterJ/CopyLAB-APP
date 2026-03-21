@@ -1,9 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import ConsciousnessSelector from '@/components/ConsciousnessSelector';
 import { ConsciousnessLevel } from '@/lib/types';
-import { Wand2, Type, AlertCircle } from 'lucide-react';
+import { IconWand, IconType, IconAlert, IconCarousel, IconReel, IconImage, IconTextPost, IconStory, IconRefresh, IconGrid } from '@/components/icons';
 import ReactMarkdown from 'react-markdown';
 import { useApp } from '@/lib/context';
 
@@ -16,6 +16,64 @@ const ANGLES = [
   { id: 'prueba_social', name: 'Prueba Social', description: 'Lo que dicen los que ya cruzaron al otro lado y lograron el resultado.' },
   { id: 'comparacion', name: 'Comparación Directa', description: 'Por qué somos la mejor opción frente a las alternativas del mercado.' },
 ];
+
+const FORMATS = [
+  { id: 'carrusel', name: 'Carrusel', description: 'Slides para Instagram/LinkedIn', icon: IconCarousel },
+  { id: 'reel', name: 'Reel / Video Corto', description: 'TikTok, Reels, Shorts', icon: IconReel },
+  { id: 'creativo_imagen', name: 'Creativo 1 Imagen', description: 'Copy + brief visual', icon: IconImage },
+  { id: 'post_texto', name: 'Post de Texto', description: 'Caption o hilo largo', icon: IconTextPost },
+  { id: 'story', name: 'Story', description: 'Secuencia de stories', icon: IconStory },
+];
+
+const FORMAT_INSTRUCTIONS: Record<string, string> = {
+  carrusel: `FORMATO: CARRUSEL (5-8 slides)
+Escribe cada ángulo como un carrusel de 5-8 slides.
+- Slide 1: Hook visual — la frase más potente que detiene el scroll. Máximo 12 palabras.
+- Slides 2-6: Desarrollo del argumento, una idea por slide. Texto corto (2-3 líneas max por slide).
+- Penúltimo slide: Remate emocional o dato demoledor.
+- Último slide: CTA claro con instrucción específica.
+Numera cada slide: [Slide 1], [Slide 2], etc.
+Incluye al final un "Brief visual" con dirección de diseño para cada slide (colores, tipografía, imágenes sugeridas).`,
+
+  reel: `FORMATO: REEL / VIDEO CORTO (30-60 segundos)
+Escribe cada ángulo como un guión de video corto.
+- Hook de apertura (0-3 seg): Frase o acción que detiene el scroll instantáneamente.
+- Desarrollo (3-40 seg): El argumento central, en lenguaje hablado natural. Frases cortas.
+- CTA hablado (últimos 5-10 seg): Qué hacer ahora.
+Incluye al final:
+- [TEXTO EN PANTALLA]: Frases clave para overlay
+- [BRIEF DE EDICIÓN]: Timing, transiciones, música sugerida, tipo de plano
+- [DURACIÓN ESTIMADA]: Total en segundos`,
+
+  creativo_imagen: `FORMATO: CREATIVO DE 1 IMAGEN
+Escribe cada ángulo como un creativo de imagen única con:
+- **Headline**: Máximo 8 palabras. La frase que domina el creativo.
+- **Subhead**: 1 línea de soporte (15-20 palabras max).
+- **Body text** (opcional): 2-3 líneas cortas si el formato lo permite.
+- **CTA**: Texto del botón o acción (3-5 palabras).
+- **Brief visual**: Descripción detallada para el diseñador — composición, paleta de color, tipografía, estilo fotográfico, elementos gráficos sugeridos.`,
+
+  post_texto: `FORMATO: POST DE TEXTO (200-300 palabras)
+Escribe cada ángulo como un post largo para redes sociales.
+- Primera línea: Hook irresistible que genera curiosidad o disonancia.
+- Desarrollo narrativo: Párrafos cortos (1-3 líneas), lenguaje conversacional.
+- Usa saltos de línea generosos para facilitar lectura en mobile.
+- Incluye al menos una "frase tweeteable" (en negrita) que invite a compartir.
+- CTA final: Pregunta, instrucción, o invitación a la acción.
+- Sugiere 3-5 hashtags relevantes al final.`,
+
+  story: `FORMATO: SECUENCIA DE STORIES (4-6 stories)
+Escribe cada ángulo como una secuencia de 4-6 stories.
+- Story 1: Hook — la pantalla que decide si siguen mirando o deslizan.
+- Stories 2-4: Desarrollo — una idea por story, texto corto (3-5 líneas max), visualmente limpio.
+- Story 5 (o penúltima): Punto de tensión o revelación.
+- Última Story: CTA con sticker de acción (link, encuesta, deslizar, DM).
+Numera cada story: [Story 1], [Story 2], etc.
+Para cada story indica:
+- Texto exacto a mostrar
+- [FONDO]: Color, foto, video sugerido
+- [STICKER/ELEMENTO]: Encuesta, slider, contador, link, etc.`,
+};
 
 const ANGLE_INSTRUCTIONS: Record<string, string> = {
   identidad: `**ÁNGULO: IDENTIDAD TRIBAL**
@@ -84,7 +142,9 @@ Estructura:
 Tono: Confiado sin ser arrogante. Objetivo. Que el lector llegue solo a la conclusión.`,
 };
 
-function buildMatrixPrompt(selectedAngles: string[], topic: string): string {
+function buildMatrixPrompt(selectedAngles: string[], topic: string, format: string): string {
+  const formatInstructions = FORMAT_INSTRUCTIONS[format] || '';
+
   const angleBlocks = selectedAngles.map(id => {
     const angle = ANGLES.find(a => a.id === id);
     const instructions = ANGLE_INSTRUCTIONS[id] || '';
@@ -92,11 +152,16 @@ function buildMatrixPrompt(selectedAngles: string[], topic: string): string {
 ## ${angle?.name?.toUpperCase()}
 ${instructions}
 
-Ahora escribe el copy de 180-220 palabras para este ángulo sobre: "${topic}".
-El copy puede ser un email, un post, o un fragmento de VSL — elige el formato que mejor potencia este ángulo específico. Indica al inicio qué formato elegiste y por qué.`;
+Ahora escribe el copy para este ángulo sobre: "${topic}".
+Respeta estrictamente el formato de output indicado arriba.`;
   }).join('\n\n');
 
   return `Genera la Matriz Multi-Ángulo para la oferta/tema: "${topic}".
+
+FORMATO DE OUTPUT OBLIGATORIO:
+${formatInstructions}
+
+IMPORTANTE: Todo el contenido generado DEBE respetar el formato indicado. No generes texto corrido genérico — adapta cada ángulo al formato especificado.
 
 Por cada ángulo seleccionado, recibirás las instrucciones específicas de técnica y estructura. Sigue cada una al pie de la letra. La calidad de cada ángulo depende de qué tan bien apliques la técnica indicada — no generes variaciones genéricas del mismo mensaje, cada ángulo debe sentirse radicalmente diferente en tono, estructura y mecanismo psicológico.
 
@@ -108,6 +173,7 @@ export default function MatrixPage() {
   const [level, setLevel] = useState<ConsciousnessLevel>(3);
   const [topic, setTopic] = useState('');
   const [selectedAngles, setSelectedAngles] = useState<string[]>(['identidad', 'miedo']);
+  const [selectedFormat, setSelectedFormat] = useState('carrusel');
 
   const [isGenerating, setIsGenerating] = useState(false);
   const [output, setOutput] = useState('');
@@ -121,7 +187,7 @@ export default function MatrixPage() {
 
   const toggleAngle = (id: string) => {
     if (selectedAngles.includes(id)) {
-      if (selectedAngles.length > 1) { // Prevents unchecking all 
+      if (selectedAngles.length > 1) {
         setSelectedAngles(prev => prev.filter(a => a !== id));
       }
     } else {
@@ -131,16 +197,16 @@ export default function MatrixPage() {
 
   const handleGenerate = async () => {
     if (!topic.trim()) return;
-    
+
     setIsGenerating(true);
     setOutput('');
-    
+
     try {
       const response = await fetch('/api/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          modulePrompt: buildMatrixPrompt(selectedAngles, topic),
+          modulePrompt: buildMatrixPrompt(selectedAngles, topic, selectedFormat),
           consciousnessLevel: level,
           brandProfile: activeBrand,
           moduleType: 'matrix',
@@ -166,17 +232,35 @@ export default function MatrixPage() {
     }
   };
 
+  // Keyboard shortcut: Ctrl/Cmd+Enter to generate
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'Enter' && topic.trim() && !isGenerating) {
+        e.preventDefault();
+        handleGenerate();
+      }
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  });
+
   return (
     <div className="max-w-6xl mx-auto h-[calc(100vh-8rem)] flex gap-8">
-      {/* Sidebar: Configurador / Brief */}
-      <div className="w-[450px] flex flex-col gap-6 overflow-y-auto pr-4 subtle-scrollbar custom-scroll pb-12 shrink-0">
+      {/* Left: Config Panel */}
+      <div className="w-[450px] flex flex-col gap-6 overflow-y-auto pr-4 custom-scroll pb-12 shrink-0">
         <div>
-          <h1 className="text-2xl font-bold text-text-primary font-inter mb-1">Matriz Multi-Ángulo</h1>
+          <div className="flex items-center gap-3 mb-1">
+            <div className="w-9 h-9 rounded-xl bg-gradient-brand-subtle flex items-center justify-center">
+              <IconGrid size={18} className="text-brand-primary" />
+            </div>
+            <h1 className="text-2xl font-bold text-text-primary font-inter">Matriz Multi-Ángulo</h1>
+          </div>
           <p className="text-text-secondary text-sm">Explora múltiples enfoques psicológicos de venta para un mismo producto.</p>
         </div>
 
         <ConsciousnessSelector selectedLevel={level} onSelectLevel={setLevel} />
 
+        {/* Angles Selector */}
         <div className="space-y-3">
           <label className="text-sm font-semibold text-text-primary block">Ángulos a Generar</label>
           <div className="grid grid-cols-2 gap-3">
@@ -186,8 +270,10 @@ export default function MatrixPage() {
                 <button
                   key={a.id}
                   onClick={() => toggleAngle(a.id)}
-                  className={`p-3 rounded-lg border text-left transition-colors flex flex-col gap-1 ${
-                    isSelected ? 'border-brand-primary bg-brand-primary/10' : 'border-border-subtle bg-surface hover:bg-elevated'
+                  className={`p-3 rounded-xl border text-left transition-all duration-200 flex flex-col gap-1 ${
+                    isSelected
+                      ? 'border-brand-primary bg-brand-primary/10 shadow-glow-indigo/20'
+                      : 'border-border-subtle bg-surface hover:bg-elevated hover:border-border-glass'
                   }`}
                 >
                   <h5 className={`text-sm font-medium ${isSelected ? 'text-text-primary' : 'text-text-secondary'}`}>{a.name}</h5>
@@ -198,6 +284,35 @@ export default function MatrixPage() {
           </div>
         </div>
 
+        {/* Format Selector */}
+        <div className="space-y-3">
+          <label className="text-sm font-semibold text-text-primary block">Formato de Output</label>
+          <div className="flex flex-wrap gap-2">
+            {FORMATS.map(f => {
+              const isSelected = selectedFormat === f.id;
+              const FormatIcon = f.icon;
+              return (
+                <button
+                  key={f.id}
+                  onClick={() => setSelectedFormat(f.id)}
+                  className={`flex items-center gap-2 px-3.5 py-2.5 rounded-xl border text-sm transition-all duration-200 ${
+                    isSelected
+                      ? 'border-brand-primary bg-brand-primary/10 text-brand-primary font-semibold shadow-glow-indigo/20'
+                      : 'border-border-subtle bg-surface text-text-secondary hover:bg-elevated hover:text-text-primary hover:border-border-glass'
+                  }`}
+                >
+                  <FormatIcon size={15} />
+                  <span>{f.name}</span>
+                </button>
+              );
+            })}
+          </div>
+          <p className="text-[10px] text-text-muted">
+            {FORMATS.find(f => f.id === selectedFormat)?.description}
+          </p>
+        </div>
+
+        {/* Topic Input */}
         <div className="space-y-3">
           <label className="text-sm font-semibold text-text-primary flex justify-between">
             <span>¿Qué estás vendiendo o promocionando?</span>
@@ -205,7 +320,7 @@ export default function MatrixPage() {
           </label>
           <div className="relative">
              <div className="absolute top-3 left-3 text-text-muted">
-               <Type size={18} />
+               <IconType size={18} />
              </div>
             <textarea
               value={topic}
@@ -219,7 +334,7 @@ export default function MatrixPage() {
 
         {!activeBrand && (
           <div className="flex items-center gap-2 p-3 bg-accent-amber/10 border border-accent-amber/20 rounded-xl text-xs text-accent-amber">
-            <AlertCircle size={14} className="flex-shrink-0" />
+            <IconAlert size={14} className="flex-shrink-0" />
             <span>Sin marca activa — el copy se generará sin contexto de marca.</span>
           </div>
         )}
@@ -227,42 +342,52 @@ export default function MatrixPage() {
         <button
           onClick={handleGenerate}
           disabled={isGenerating || !topic.trim()}
-          className="w-full py-4 bg-brand-primary hover:bg-brand-secondary disabled:bg-surface disabled:text-text-muted disabled:border disabled:border-border-subtle text-white rounded-xl font-bold transition-all shadow-glow-indigo disabled:shadow-none flex items-center justify-center gap-2 mt-4"
+          className="w-full py-4 bg-gradient-brand hover:opacity-90 disabled:bg-surface disabled:text-text-muted disabled:border disabled:border-border-subtle disabled:bg-none text-white rounded-xl font-bold transition-all shadow-glow-indigo disabled:shadow-none flex items-center justify-center gap-2 mt-4 active:scale-[0.98]"
         >
-          <Wand2 size={20} className={isGenerating ? "animate-pulse" : ""} />
+          <IconWand size={20} className={isGenerating ? "animate-pulse" : ""} />
           {isGenerating ? 'Escribiendo Matriz...' : 'Generar Matriz Estratégica'}
         </button>
+        <p className="text-[10px] text-text-muted text-center -mt-3">Ctrl+Enter para generar</p>
       </div>
 
-      {/* Renderizado de AI */}
-        <div className="flex-1 bg-surface border border-border-subtle rounded-2xl p-6 flex flex-col relative overflow-hidden shadow-xl">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-brand-primary/10 blur-[100px] rounded-full pointer-events-none -translate-x-12 -translate-y-12"></div>
-        <div className="absolute bottom-0 left-0 w-48 h-48 bg-brand-secondary/10 blur-[80px] rounded-full pointer-events-none translate-x-12 translate-y-12"></div>
+      {/* Right: AI Output */}
+      <div className="flex-1 glass border-border-glass rounded-2xl p-6 flex flex-col relative overflow-hidden shadow-elevated">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-brand-primary/10 blur-[100px] rounded-full pointer-events-none -translate-x-12 -translate-y-12" />
+        <div className="absolute bottom-0 left-0 w-48 h-48 bg-brand-secondary/10 blur-[80px] rounded-full pointer-events-none translate-x-12 translate-y-12" />
 
         <div className="flex items-center justify-between border-b border-border-subtle pb-4 mb-4 relative z-10">
           <h2 className="text-lg font-semibold text-text-primary flex items-center gap-2">
-            <Wand2 size={18} className="text-brand-primary" />
+            <IconWand size={18} className="text-brand-primary" />
             Resultados del Matrix Engine
           </h2>
           {output && !isGenerating && (
-            <button
-              onClick={copyToClipboard}
-              className="text-[10px] font-black uppercase tracking-widest text-brand-primary bg-brand-primary/10 px-4 py-2 rounded-lg hover:bg-brand-primary/20 transition-all border border-brand-primary/20 active:scale-95"
-            >
-              {copied ? '¡Copiado!' : 'Copiar Todo'}
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={handleGenerate}
+                className="text-[10px] font-black uppercase tracking-widest text-text-secondary bg-elevated px-3 py-2 rounded-lg hover:bg-overlay hover:text-text-primary transition-all border border-border-subtle active:scale-95 flex items-center gap-1.5"
+              >
+                <IconRefresh size={12} />
+                Regenerar
+              </button>
+              <button
+                onClick={copyToClipboard}
+                className="text-[10px] font-black uppercase tracking-widest text-brand-primary bg-brand-primary/10 px-4 py-2 rounded-lg hover:bg-brand-primary/20 transition-all border border-brand-primary/20 active:scale-95"
+              >
+                {copied ? '¡Copiado!' : 'Copiar Todo'}
+              </button>
+            </div>
           )}
         </div>
 
         <div className="flex-1 overflow-y-auto pr-2 custom-scroll relative z-10 text-sm leading-relaxed text-text-primary">
           {output ? (
-            <div className="markdown-content">
+            <div className="markdown-content animate-fade-in">
               <ReactMarkdown>{output}</ReactMarkdown>
             </div>
           ) : (
              <div className="h-full flex flex-col items-center justify-center text-text-muted w-3/4 mx-auto text-center space-y-4">
-               <div className="w-16 h-16 rounded-full bg-elevated border border-border-subtle flex items-center justify-center shadow-lg">
-                 <Wand2 size={28} className="text-text-secondary opacity-50" />
+               <div className="w-16 h-16 rounded-full bg-elevated border border-border-glass flex items-center justify-center shadow-lg animate-float">
+                 <IconWand size={28} className="text-text-secondary opacity-50" />
                </div>
                <p>Descubre qué mensaje conecta profundo configurando tu base y seleccionando múltiples ángulos de respuesta directa.</p>
              </div>

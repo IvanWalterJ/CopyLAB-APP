@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Zap, Save, CheckCircle2, AlertCircle, Loader2, Plus, Trash2 } from 'lucide-react';
+import { IconBolt, IconSave, IconCheckCircle, IconAlert, IconLoader, IconPlus, IconTrash } from '@/components/icons';
 import { BrandProfile } from '@/lib/types';
 import { useApp } from '@/lib/context';
 import BusinessStep from './BusinessStep';
@@ -35,7 +35,11 @@ const emptyProfile = (): Partial<BrandProfile> => ({
   is_active: true,
 });
 
-export default function AvatarBuilder() {
+interface AvatarBuilderProps {
+  forceNew?: boolean;
+}
+
+export default function AvatarBuilder({ forceNew = false }: AvatarBuilderProps) {
   const { activeBrand, setActiveBrand, brands, refreshBrands } = useApp();
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<TabId>('business');
@@ -44,8 +48,15 @@ export default function AvatarBuilder() {
   const [toast, setToast] = useState<{ type: 'success' | 'error'; msg: string } | null>(null);
   const [isNew, setIsNew] = useState(false);
 
-  // Sync profile from activeBrand
+  // Sync profile from activeBrand (skip when creating a new profile via onboarding)
   useEffect(() => {
+    if (forceNew) {
+      setProfile(emptyProfile());
+      setIsNew(true);
+      // Clear the ?new=true param so it doesn't persist on navigation
+      router.replace('/avatar', { scroll: false });
+      return;
+    }
     if (activeBrand) {
       setProfile(activeBrand);
       setIsNew(false);
@@ -53,7 +64,7 @@ export default function AvatarBuilder() {
       setProfile(emptyProfile());
       setIsNew(true);
     }
-  }, [activeBrand]);
+  }, [activeBrand, forceNew, router]);
 
   const showToast = (type: 'success' | 'error', msg: string) => {
     setToast({ type, msg });
@@ -141,7 +152,7 @@ export default function AvatarBuilder() {
             ? 'bg-accent-emerald/10 border-accent-emerald/30 text-accent-emerald'
             : 'bg-accent-red/10 border-accent-red/30 text-accent-red'
         }`}>
-          {toast.type === 'success' ? <CheckCircle2 size={18} /> : <AlertCircle size={18} />}
+          {toast.type === 'success' ? <IconCheckCircle size={18} /> : <IconAlert size={18} />}
           {toast.msg}
         </div>
       )}
@@ -166,13 +177,13 @@ export default function AvatarBuilder() {
           </div>
 
           <button onClick={handleNew} className="flex items-center gap-1.5 px-3 py-2 bg-surface hover:bg-elevated border border-border-subtle text-text-secondary hover:text-text-primary rounded-lg text-sm font-medium transition-colors">
-            <Plus size={16} />
+            <IconPlus size={16} />
             Nuevo
           </button>
 
           {!isNew && profile.id && (
             <button onClick={handleDelete} className="p-2 text-text-muted hover:text-accent-red hover:bg-accent-red/10 rounded-lg transition-colors">
-              <Trash2 size={16} />
+              <IconTrash size={16} />
             </button>
           )}
 
@@ -181,7 +192,7 @@ export default function AvatarBuilder() {
             disabled={saving}
             className="flex items-center gap-2 px-5 py-2 bg-brand-primary hover:bg-brand-secondary disabled:opacity-60 text-white rounded-lg font-semibold transition-all shadow-glow-indigo active:scale-95"
           >
-            {saving ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
+            {saving ? <IconLoader size={16} className="animate-spin" /> : <IconSave size={16} />}
             {saving ? 'Guardando...' : (isNew ? 'Crear Perfil' : 'Guardar Cambios')}
           </button>
         </div>
@@ -244,7 +255,7 @@ export default function AvatarBuilder() {
           disabled={saving}
           className="flex items-center justify-center gap-2 w-full py-3.5 bg-brand-primary hover:bg-brand-secondary disabled:opacity-60 text-white rounded-xl font-bold"
         >
-          {saving ? <Loader2 size={18} className="animate-spin" /> : <Zap size={18} />}
+          {saving ? <IconLoader size={18} className="animate-spin" /> : <IconBolt size={18} />}
           {saving ? 'Guardando...' : 'Guardar Perfil'}
         </button>
       </div>

@@ -1,17 +1,17 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import ConsciousnessSelector from '@/components/ConsciousnessSelector';
 import { ConsciousnessLevel } from '@/lib/types';
-import { PlayCircle, Instagram, Twitter, Linkedin, Wand2, Type, AlertCircle } from 'lucide-react';
+import { IconPlayCircle, IconInstagram, IconTwitter, IconLinkedin, IconWand, IconType, IconAlert, IconBolt, IconRefresh } from '@/components/icons';
 import { useApp } from '@/lib/context';
 import ReactMarkdown from 'react-markdown';
 
 const platforms = [
-  { id: 'instagram', icon: Instagram, name: 'Instagram', description: 'Reels / Carruseles' },
-  { id: 'tiktok', icon: PlayCircle, name: 'TikTok', description: 'Video Corto' },
-  { id: 'twitter', icon: Twitter, name: 'Twitter / X', description: 'Hilos Cortos' },
-  { id: 'linkedin', icon: Linkedin, name: 'LinkedIn', description: 'Posts Profesionales' },
+  { id: 'instagram', icon: IconInstagram, name: 'Instagram', description: 'Reels / Carruseles' },
+  { id: 'tiktok', icon: IconPlayCircle, name: 'TikTok', description: 'Video Corto' },
+  { id: 'twitter', icon: IconTwitter, name: 'Twitter / X', description: 'Hilos Cortos' },
+  { id: 'linkedin', icon: IconLinkedin, name: 'LinkedIn', description: 'Posts Profesionales' },
 ];
 
 export default function HooksPage() {
@@ -93,6 +93,19 @@ PARA CADA HOOK: Adapta el formato nativo de ${platform} (longitud, tono, si va e
     }
   };
 
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+        e.preventDefault();
+        if (!isGenerating) {
+          handleGenerate();
+        }
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [handleGenerate, isGenerating]);
+
   const copyToClipboard = () => {
     navigator.clipboard.writeText(output);
     setCopied(true);
@@ -104,7 +117,12 @@ PARA CADA HOOK: Adapta el formato nativo de ${platform} (longitud, tono, si va e
       {/* Sidebar: Configurador / Brief */}
       <div className="w-[400px] flex flex-col gap-6 overflow-y-auto pr-4 subtle-scrollbar custom-scroll pb-12 shrink-0">
         <div>
-          <h1 className="text-2xl font-bold text-text-primary font-inter mb-1 leading-tight">Hooks Engine</h1>
+          <div className="flex items-center gap-3 mb-1">
+            <div className="w-9 h-9 rounded-xl bg-gradient-brand-subtle flex items-center justify-center">
+              <IconBolt size={18} className="text-brand-primary" />
+            </div>
+            <h1 className="text-2xl font-bold text-text-primary font-inter leading-tight">Hooks Engine</h1>
+          </div>
           <p className="text-text-secondary text-sm">Frena el scroll de tu audiencia en los primeros 3 segundos.</p>
         </div>
 
@@ -141,7 +159,7 @@ PARA CADA HOOK: Adapta el formato nativo de ${platform} (longitud, tono, si va e
           </label>
           <div className="relative">
             <div className="absolute top-3 left-3 text-text-muted">
-              <Type size={18} />
+              <IconType size={18} />
             </div>
             <textarea
               value={topic}
@@ -155,7 +173,7 @@ PARA CADA HOOK: Adapta el formato nativo de ${platform} (longitud, tono, si va e
 
         {!activeBrand && (
           <div className="flex items-center gap-2 p-3 bg-accent-amber/10 border border-accent-amber/20 rounded-xl text-xs text-accent-amber">
-            <AlertCircle size={14} className="flex-shrink-0" />
+            <IconAlert size={14} className="flex-shrink-0" />
             <span>Sin marca activa — el copy se generará sin contexto de marca.</span>
           </div>
         )}
@@ -163,15 +181,15 @@ PARA CADA HOOK: Adapta el formato nativo de ${platform} (longitud, tono, si va e
         <button
           onClick={handleGenerate}
           disabled={isGenerating || !topic.trim()}
-          className="w-full py-4 bg-brand-primary hover:bg-brand-secondary disabled:bg-surface disabled:text-text-muted disabled:border-border-subtle text-white rounded-xl font-bold transition-all shadow-glow-indigo flex items-center justify-center gap-2 mt-2 active:scale-[0.98]"
+          className="w-full py-4 bg-gradient-to-r from-brand-primary to-brand-secondary hover:opacity-90 disabled:bg-surface disabled:text-text-muted disabled:border-border-subtle text-white rounded-xl font-bold transition-all shadow-glow-indigo flex items-center justify-center gap-2 mt-2 active:scale-[0.98]"
         >
-          <Wand2 size={20} className={isGenerating ? "animate-spin" : ""} />
+          <IconWand size={20} className={isGenerating ? "animate-spin" : ""} />
           {isGenerating ? 'Redactando...' : 'Generar Hooks Irresistibles'}
         </button>
       </div>
 
       {/* Renderizado de AI */}
-      <div className="flex-1 bg-surface border border-border-subtle rounded-3xl p-8 flex flex-col relative overflow-hidden shadow-2xl">
+      <div className="flex-1 glass border border-border-glass rounded-3xl p-8 flex flex-col relative overflow-hidden shadow-elevated">
         {/* Decorativo */}
         <div className="absolute top-0 right-0 w-80 h-80 bg-brand-primary/5 blur-[100px] rounded-full pointer-events-none -translate-x-12 -translate-y-12"></div>
         <div className="absolute bottom-0 left-0 w-64 h-64 bg-brand-secondary/5 blur-[80px] rounded-full pointer-events-none translate-x-12 translate-y-12"></div>
@@ -179,24 +197,33 @@ PARA CADA HOOK: Adapta el formato nativo de ${platform} (longitud, tono, si va e
         <div className="flex items-center justify-between border-b border-border-subtle pb-5 mb-6 relative z-10">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded-lg bg-brand-primary/10 flex items-center justify-center">
-               <Wand2 size={18} className="text-brand-primary" />
+               <IconWand size={18} className="text-brand-primary" />
             </div>
             <h2 className="text-lg font-bold text-text-primary">Resultados del Engine</h2>
           </div>
           {output && !isGenerating && (
-            <button 
-              onClick={copyToClipboard}
-              className="text-[10px] font-black uppercase tracking-widest text-brand-primary bg-brand-primary/10 px-4 py-2 rounded-lg hover:bg-brand-primary/20 transition-all border border-brand-primary/20 active:scale-95"
-            >
-              {copied ? '¡Copiado!' : 'Copiar Todo'}
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={handleGenerate}
+                className="text-[10px] font-black uppercase tracking-widest text-text-secondary bg-surface px-4 py-2 rounded-lg hover:bg-elevated transition-all border border-border-subtle active:scale-95 flex items-center gap-1.5"
+              >
+                <IconRefresh size={12} />
+                Regenerar
+              </button>
+              <button
+                onClick={copyToClipboard}
+                className="text-[10px] font-black uppercase tracking-widest text-brand-primary bg-brand-primary/10 px-4 py-2 rounded-lg hover:bg-brand-primary/20 transition-all border border-brand-primary/20 active:scale-95"
+              >
+                {copied ? '¡Copiado!' : 'Copiar Todo'}
+              </button>
+            </div>
           )}
         </div>
 
         <div className="flex-1 overflow-y-auto pr-4 custom-scroll relative z-10 font-inter text-sm leading-relaxed text-text-primary">
           {error && (
             <div className="flex items-center gap-3 p-4 bg-accent-red/10 border border-accent-red/20 rounded-2xl text-accent-red mb-6 animate-in fade-in slide-in-from-top-2">
-              <AlertCircle size={20} className="flex-shrink-0" />
+              <IconAlert size={20} className="flex-shrink-0" />
               <p className="font-semibold text-sm">{error}</p>
             </div>
           )}
@@ -207,8 +234,8 @@ PARA CADA HOOK: Adapta el formato nativo de ${platform} (longitud, tono, si va e
             </div>
           ) : !error && !isGenerating && (
              <div className="h-full flex flex-col items-center justify-center text-text-muted w-3/4 mx-auto text-center space-y-5">
-               <div className="w-20 h-20 rounded-3xl bg-elevated border border-border-subtle flex items-center justify-center shadow-2xl rotate-3">
-                 <Wand2 size={32} className="text-text-secondary opacity-30" />
+               <div className="w-20 h-20 rounded-3xl bg-elevated border border-border-subtle flex items-center justify-center shadow-2xl rotate-3 animate-glow-pulse">
+                 <IconWand size={32} className="text-text-secondary opacity-30" />
                </div>
                <div className="space-y-2">
                  <p className="text-text-primary font-bold text-base">Ingeniería de Atención</p>

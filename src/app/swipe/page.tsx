@@ -2,9 +2,10 @@
 
 import React, { useState, useEffect } from 'react';
 import { createClient } from '@/utils/supabase/client';
+import { useApp } from '@/lib/context';
 import {
-  Star, Search, Copy, Trash2, Calendar, Tag, Plus, X, FileText
-} from 'lucide-react';
+  IconStar, IconSearch, IconCopy, IconTrash, IconCalendar, IconTag, IconPlus, IconX, IconDocument
+} from '@/components/icons';
 import ReactMarkdown from 'react-markdown';
 
 interface SwipeItem {
@@ -29,6 +30,7 @@ export default function SwipePage() {
   const [newItem, setNewItem] = useState({ title: '', category: '', content: '' });
   const [saving, setSaving] = useState(false);
   const supabase = createClient();
+  const { userId } = useApp();
 
   useEffect(() => {
     fetchSwipe();
@@ -53,9 +55,10 @@ export default function SwipePage() {
   };
 
   const saveNewItem = async () => {
-    if (!newItem.content.trim()) return;
+    if (!newItem.content.trim() || !userId) return;
     setSaving(true);
     const { data } = await supabase.from('swipe_file').insert({
+      user_id: userId,
       title: newItem.title || newItem.content.substring(0, 60),
       category: newItem.category || 'Sin categoría',
       content: newItem.content,
@@ -89,16 +92,16 @@ export default function SwipePage() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold text-text-primary flex items-center gap-2">
-              <Star className="text-accent-amber" size={24} />
-              Swipe File
+              <IconStar className="text-accent-amber" size={24} />
+              Banco de Inspiración
             </h1>
-            <p className="text-text-secondary text-xs uppercase tracking-widest font-bold mt-1">Tu archivo de inspiración</p>
+            <p className="text-text-secondary text-xs uppercase tracking-widest font-bold mt-1">Tus mejores copys guardados</p>
           </div>
           <button
             onClick={() => setShowAddForm(!showAddForm)}
             className="flex items-center gap-1.5 px-3 py-2 bg-accent-amber/10 border border-accent-amber/20 text-accent-amber rounded-xl text-xs font-bold hover:bg-accent-amber/20 transition-all"
           >
-            {showAddForm ? <X size={14} /> : <Plus size={14} />}
+            {showAddForm ? <IconX size={14} /> : <IconPlus size={14} />}
             {showAddForm ? 'Cancelar' : 'Agregar'}
           </button>
         </div>
@@ -140,7 +143,7 @@ export default function SwipePage() {
 
         {/* Search */}
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" size={16} />
+          <IconSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted" size={16} />
           <input
             type="text"
             placeholder="Buscar en tu swipe file..."
@@ -179,9 +182,9 @@ export default function SwipePage() {
             ))
           ) : filtered.length === 0 ? (
             <div className="h-64 flex flex-col items-center justify-center text-text-muted bg-surface/30 border border-dashed border-border-subtle rounded-2xl">
-              <Star size={40} className="opacity-20 mb-3" />
-              <p className="text-sm">Tu swipe file está vacío</p>
-              <p className="text-xs mt-1 text-text-muted">Guarda tus mejores copys desde el Historial</p>
+              <IconStar size={40} className="opacity-20 mb-3" />
+              <p className="text-sm">Tu banco está vacío</p>
+              <p className="text-xs mt-1 text-text-muted">Guarda tus mejores copys desde Mis Copys con el botón ⭐</p>
             </div>
           ) : (
             filtered.map(item => (
@@ -198,7 +201,7 @@ export default function SwipePage() {
                   <div className="flex items-center gap-2">
                     {item.category && (
                       <span className="flex items-center gap-1 text-[10px] font-bold text-accent-amber uppercase tracking-widest">
-                        <Tag size={10} />{item.category}
+                        <IconTag size={10} />{item.category}
                       </span>
                     )}
                   </div>
@@ -210,7 +213,7 @@ export default function SwipePage() {
                   onClick={(e) => deleteItem(item.id, e)}
                   className="absolute top-4 right-4 p-1.5 text-text-muted hover:text-accent-red opacity-0 group-hover:opacity-100 transition-opacity"
                 >
-                  <Trash2 size={14} />
+                  <IconTrash size={14} />
                 </button>
               </div>
             ))
@@ -219,16 +222,16 @@ export default function SwipePage() {
       </div>
 
       {/* Right preview */}
-      <div className="flex-1 bg-surface border border-border-subtle rounded-3xl p-8 flex flex-col relative overflow-hidden shadow-2xl">
+      <div className="flex-1 glass border border-border-glass rounded-3xl p-8 flex flex-col relative overflow-hidden shadow-elevated">
         {selectedItem ? (
           <>
             <div className="flex items-center justify-between border-b border-border-subtle pb-5 mb-6">
               <div>
                 <h2 className="text-xl font-bold text-text-primary">{selectedItem.title || 'Sin título'}</h2>
                 <div className="flex items-center gap-3 mt-1 text-xs text-text-muted">
-                  <span className="flex items-center gap-1"><Calendar size={12} /> {new Date(selectedItem.created_at).toLocaleString()}</span>
+                  <span className="flex items-center gap-1"><IconCalendar size={12} /> {new Date(selectedItem.created_at).toLocaleString()}</span>
                   {selectedItem.category && (
-                    <span className="flex items-center gap-1 font-bold text-accent-amber"><Tag size={10} /> {selectedItem.category}</span>
+                    <span className="flex items-center gap-1 font-bold text-accent-amber"><IconTag size={10} /> {selectedItem.category}</span>
                   )}
                 </div>
               </div>
@@ -236,7 +239,7 @@ export default function SwipePage() {
                 onClick={() => navigator.clipboard.writeText(selectedItem.content)}
                 className="flex items-center gap-2 px-4 py-2 bg-brand-primary/10 border border-brand-primary/20 rounded-xl text-xs font-bold text-brand-primary hover:bg-brand-primary/20 transition-all active:scale-95"
               >
-                <Copy size={14} />
+                <IconCopy size={14} />
                 Copiar
               </button>
             </div>
@@ -249,11 +252,11 @@ export default function SwipePage() {
         ) : (
           <div className="h-full flex flex-col items-center justify-center text-center space-y-6">
             <div className="w-24 h-24 rounded-[2rem] bg-elevated border border-border-subtle flex items-center justify-center shadow-inner">
-              <FileText size={40} className="text-text-muted opacity-30" />
+              <IconDocument size={40} className="text-text-muted opacity-30" />
             </div>
             <div className="space-y-2">
-              <h3 className="text-xl font-bold text-text-primary">Swipe File</h3>
-              <p className="text-sm text-text-muted max-w-sm mx-auto">Guarda aquí tus mejores copys para usarlos como inspiración. Accede desde el Historial con el botón ⭐ Swipe File.</p>
+              <h3 className="text-xl font-bold text-text-primary">Banco de Inspiración</h3>
+              <p className="text-sm text-text-muted max-w-sm mx-auto">Guarda aquí los copys que más te gustan. La IA los usará como referencia para generar mejores resultados adaptados a tu estilo.</p>
             </div>
           </div>
         )}

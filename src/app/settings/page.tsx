@@ -1,6 +1,6 @@
 'use client';
 
-import { User, Bell, CreditCard, Shield } from 'lucide-react';
+import { IconUser, IconBell, IconCreditCard, IconShield } from '@/components/icons';
 import { useApp } from '@/lib/context';
 
 export default function SettingsView() {
@@ -17,10 +17,10 @@ export default function SettingsView() {
         {/* Sidebar Settings */}
         <div className="space-y-1">
           {[
-            { id: 'profile', label: 'Perfil', icon: User, active: true },
-            { id: 'billing', label: 'Facturación', icon: CreditCard },
-            { id: 'notifications', label: 'Notificaciones', icon: Bell },
-            { id: 'security', label: 'Seguridad', icon: Shield },
+            { id: 'profile', label: 'Perfil', icon: IconUser, active: true },
+            { id: 'billing', label: 'Facturación', icon: IconCreditCard },
+            { id: 'notifications', label: 'Notificaciones', icon: IconBell },
+            { id: 'security', label: 'Seguridad', icon: IconShield },
           ].map(item => (
             <button
               key={item.id}
@@ -40,7 +40,7 @@ export default function SettingsView() {
         <div className="md:col-span-2 space-y-6">
           <div className="bg-surface border border-border-subtle rounded-2xl p-6">
             <h3 className="text-lg font-bold text-text-primary mb-4 flex items-center gap-2">
-              <User size={18} className="text-brand-primary" />
+              <IconUser size={18} className="text-brand-primary" />
               Información de Perfil
             </h3>
             
@@ -72,7 +72,7 @@ export default function SettingsView() {
                 <span className="bg-elevated border border-border-subtle px-3 py-1 rounded-full text-[10px] font-bold text-text-muted uppercase tracking-widest">Próximamente</span>
              </div>
             <h3 className="text-lg font-bold text-text-primary mb-4 flex items-center gap-2">
-              <CreditCard size={18} className="text-accent-amber" />
+              <IconCreditCard size={18} className="text-accent-amber" />
               Suscripción y Créditos
             </h3>
             <p className="text-sm text-text-secondary">Pronto podrás gestionar tus pagos de Hotmart y suscripciones recurrentes aquí.</p>

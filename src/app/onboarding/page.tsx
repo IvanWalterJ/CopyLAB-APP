@@ -4,18 +4,18 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useApp } from '@/lib/context';
 import {
-  Bot, ArrowRight, Sparkles, CheckCircle2, Loader2,
-  Building2, Users, Target, Megaphone, SkipForward,
-  ChevronRight, Zap
-} from 'lucide-react';
+  IconBot, IconArrowRight, IconSparkles, IconCheckCircle, IconLoader,
+  IconBuilding, IconUsers, IconTarget, IconMegaphone, IconSkipForward,
+  IconChevronRight, IconBolt
+} from '@/components/icons';
 
 // ─── Questions ───────────────────────────────────────────────────────────────
 
 const PHASES = [
-  { label: 'Negocio', icon: Building2, color: 'text-brand-primary', bg: 'bg-brand-primary/10', border: 'border-brand-primary/30' },
-  { label: 'Tu Cliente', icon: Users, color: 'text-emerald-400', bg: 'bg-emerald-400/10', border: 'border-emerald-400/30' },
-  { label: 'Diferenciación', icon: Target, color: 'text-amber-400', bg: 'bg-amber-400/10', border: 'border-amber-400/30' },
-  { label: 'Voz de Marca', icon: Megaphone, color: 'text-purple-400', bg: 'bg-purple-400/10', border: 'border-purple-400/30' },
+  { label: 'Negocio', icon: IconBuilding, color: 'text-brand-primary', bg: 'bg-brand-primary/10', border: 'border-brand-primary/30' },
+  { label: 'Tu Cliente', icon: IconUsers, color: 'text-emerald-400', bg: 'bg-emerald-400/10', border: 'border-emerald-400/30' },
+  { label: 'Diferenciación', icon: IconTarget, color: 'text-amber-400', bg: 'bg-amber-400/10', border: 'border-amber-400/30' },
+  { label: 'Voz de Marca', icon: IconMegaphone, color: 'text-purple-400', bg: 'bg-purple-400/10', border: 'border-purple-400/30' },
 ];
 
 const QUESTIONS = [
@@ -112,7 +112,7 @@ function AgentBubble({ text, isLast }: { text: string; isLast: boolean }) {
   return (
     <div className="flex items-start gap-3">
       <div className="w-8 h-8 rounded-full bg-brand-primary/20 border border-brand-primary/30 flex items-center justify-center flex-shrink-0 mt-0.5">
-        <Bot size={14} className="text-brand-primary" />
+        <IconBot size={14} className="text-brand-primary" />
       </div>
       <div className="bg-elevated border border-border-subtle rounded-2xl rounded-tl-sm px-4 py-3 max-w-[85%]">
         <p className="text-text-primary text-sm leading-relaxed whitespace-pre-wrap">{isLast ? display : text}</p>
@@ -135,7 +135,7 @@ function TypingIndicator() {
   return (
     <div className="flex items-start gap-3">
       <div className="w-8 h-8 rounded-full bg-brand-primary/20 border border-brand-primary/30 flex items-center justify-center flex-shrink-0">
-        <Bot size={14} className="text-brand-primary" />
+        <IconBot size={14} className="text-brand-primary" />
       </div>
       <div className="bg-elevated border border-border-subtle rounded-2xl rounded-tl-sm px-4 py-3">
         <div className="flex gap-1.5 items-center h-4">
@@ -298,7 +298,7 @@ export default function OnboardingPage() {
           {/* Logo */}
           <div className="flex justify-center">
             <div className="w-16 h-16 bg-brand-primary/15 border border-brand-primary/30 rounded-2xl flex items-center justify-center">
-              <Sparkles size={28} className="text-brand-primary" />
+              <IconSparkles size={28} className="text-brand-primary" />
             </div>
           </div>
 
@@ -342,13 +342,13 @@ export default function OnboardingPage() {
               className="w-full py-3.5 bg-brand-primary hover:bg-brand-primary/90 text-white font-bold rounded-xl transition-all flex items-center justify-center gap-2 group"
             >
               Comenzar entrevista
-              <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+              <IconArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
             </button>
             <button
-              onClick={() => router.push('/avatar')}
+              onClick={() => router.push('/avatar?new=true')}
               className="w-full py-2.5 text-text-muted hover:text-text-secondary text-sm flex items-center justify-center gap-1.5 transition-colors"
             >
-              <SkipForward size={13} />
+              <IconSkipForward size={13} />
               Configurar manualmente
             </button>
           </div>
@@ -367,7 +367,7 @@ export default function OnboardingPage() {
         <div className="border-b border-border-subtle px-4 py-3 flex items-center justify-between flex-shrink-0">
           <div className="flex items-center gap-3">
             <div className="w-7 h-7 bg-brand-primary/15 border border-brand-primary/30 rounded-lg flex items-center justify-center">
-              <Bot size={14} className="text-brand-primary" />
+              <IconBot size={14} className="text-brand-primary" />
             </div>
             <div>
               <p className="text-xs font-bold text-text-primary">Agente CopyLab</p>
@@ -430,7 +430,7 @@ export default function OnboardingPage() {
               disabled={!input.trim() || isAgentTyping}
               className="w-11 h-11 bg-brand-primary hover:bg-brand-primary/90 disabled:opacity-40 disabled:cursor-not-allowed rounded-xl flex items-center justify-center transition-all flex-shrink-0"
             >
-              <ChevronRight size={18} className="text-white" />
+              <IconChevronRight size={18} className="text-white" />
             </button>
           </div>
           <p className="text-center text-[10px] text-text-muted mt-2">
@@ -448,7 +448,7 @@ export default function OnboardingPage() {
       <div className="min-h-screen bg-background flex items-center justify-center p-6">
         <div className="text-center space-y-6">
           <div className="w-16 h-16 mx-auto bg-brand-primary/10 border border-brand-primary/20 rounded-2xl flex items-center justify-center">
-            <Loader2 size={28} className="text-brand-primary animate-spin" />
+            <IconLoader size={28} className="text-brand-primary animate-spin" />
           </div>
           <div className="space-y-2">
             <h2 className="text-xl font-black text-text-primary">Construyendo tu perfil estratégico</h2>
@@ -498,7 +498,7 @@ export default function OnboardingPage() {
           <div className="text-center space-y-2">
             <div className="flex justify-center">
               <div className="w-12 h-12 bg-emerald-400/15 border border-emerald-400/30 rounded-xl flex items-center justify-center">
-                <CheckCircle2 size={22} className="text-emerald-400" />
+                <IconCheckCircle size={22} className="text-emerald-400" />
               </div>
             </div>
             <h1 className="text-2xl font-black text-text-primary">Tu perfil estratégico está listo</h1>
@@ -508,7 +508,7 @@ export default function OnboardingPage() {
           {/* Card: Marca */}
           <div className="bg-surface border border-border-subtle rounded-2xl p-5 space-y-3">
             <div className="flex items-center gap-2">
-              <Building2 size={14} className="text-brand-primary" />
+              <IconBuilding size={14} className="text-brand-primary" />
               <span className="text-xs font-bold text-brand-primary uppercase tracking-wider">Marca</span>
             </div>
             <div>
@@ -526,7 +526,7 @@ export default function OnboardingPage() {
           {/* Card: Avatar */}
           <div className="bg-surface border border-border-subtle rounded-2xl p-5 space-y-4">
             <div className="flex items-center gap-2">
-              <Users size={14} className="text-emerald-400" />
+              <IconUsers size={14} className="text-emerald-400" />
               <span className="text-xs font-bold text-emerald-400 uppercase tracking-wider">Cliente Ideal</span>
             </div>
             {p.avatar_name && (
@@ -559,7 +559,7 @@ export default function OnboardingPage() {
           {/* Card: Diferenciación */}
           <div className="bg-surface border border-border-subtle rounded-2xl p-5 space-y-3">
             <div className="flex items-center gap-2">
-              <Target size={14} className="text-amber-400" />
+              <IconTarget size={14} className="text-amber-400" />
               <span className="text-xs font-bold text-amber-400 uppercase tracking-wider">Diferenciación</span>
             </div>
             {p.product_name && (
@@ -594,7 +594,7 @@ export default function OnboardingPage() {
           {/* Card: Voz de Marca */}
           <div className="bg-surface border border-border-subtle rounded-2xl p-5 space-y-4">
             <div className="flex items-center gap-2">
-              <Megaphone size={14} className="text-purple-400" />
+              <IconMegaphone size={14} className="text-purple-400" />
               <span className="text-xs font-bold text-purple-400 uppercase tracking-wider">Voz de Marca</span>
             </div>
             {p.brand_adjectives?.length > 0 && (
@@ -630,9 +630,9 @@ export default function OnboardingPage() {
               className="w-full py-3.5 bg-brand-primary hover:bg-brand-primary/90 disabled:opacity-60 text-white font-bold rounded-xl transition-all flex items-center justify-center gap-2"
             >
               {appPhase === 'saving' ? (
-                <><Loader2 size={16} className="animate-spin" /> Guardando perfil...</>
+                <><IconLoader size={16} className="animate-spin" /> Guardando perfil...</>
               ) : (
-                <><Zap size={16} /> Activar este perfil</>
+                <><IconBolt size={16} /> Activar este perfil</>
               )}
             </button>
             <button
