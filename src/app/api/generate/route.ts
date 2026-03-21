@@ -116,12 +116,39 @@ export async function POST(req: Request) {
       }
     }
 
-    const { modulePrompt, consciousnessLevel, brandProfile, moduleType = 'general' } = await req.json() as { 
-      modulePrompt: string; 
+    const { modulePrompt, consciousnessLevel, brandProfile, moduleType = 'general' } = await req.json() as {
+      modulePrompt: string;
       consciousnessLevel: number;
       brandProfile: BrandProfile | null;
       moduleType?: string;
     };
+
+    // Fetch user's saved inspiration bank to improve generation quality
+    let swipeLayer = '';
+    if (supabaseAdmin) {
+      const { data: swipeItems } = await supabaseAdmin
+        .from('swipe_file')
+        .select('content, title, category')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false })
+        .limit(5);
+
+      if (swipeItems && swipeItems.length > 0) {
+        const examples = swipeItems.map((item, i) => {
+          const label = item.title || `Ejemplo ${i + 1}`;
+          const preview = item.content.replace(/[#*]/g, '').substring(0, 400);
+          return `[${item.category || 'General'}] ${label}:\n${preview}`;
+        }).join('\n\n---\n\n');
+
+        swipeLayer = `\n[BANCO DE INSPIRACIÓN DEL USUARIO — COPYS QUE YA LE FUNCIONARON]
+Estos son copys reales que este usuario ha guardado como favoritos. Analiza su estructura, tono y estilo.
+NO los copies literalmente, pero úsalos como referencia del nivel de calidad y el estilo que resuena con su audiencia:
+
+${examples}
+
+---`;
+      }
+    }
 
     const modelInfo = {
       model: "gemini-2.0-flash",
@@ -165,7 +192,7 @@ ${brandLayer}
 
 [NIVEL DE CONSCIENCIA DE LA AUDIENCIA (Schwartz)]
 ${consciousnessLayer}
-
+${swipeLayer}
 [INSTRUCCIONES DEL MÓDULO (TU TAREA PRINCIPAL)]
 ${modulePrompt}
 
