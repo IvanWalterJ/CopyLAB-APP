@@ -37,31 +37,25 @@ export default function HooksPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          modulePrompt: `Genera 5 hooks de alto impacto para ${platform} sobre el tema: "${topic}".
+          modulePrompt: `Genera 5 hooks de ALTO IMPACTO para ${platform} sobre: "${topic}".
 
-REGLA FUNDAMENTAL: Cada hook debe usar un TIPO DIFERENTE. No repitas el mismo mecanismo psicológico. La variedad es la clave para encontrar el ganador.
+REGLA CRÍTICA: Entrega SOLO los 5 hooks numerados. Sin etiquetas de tipo, sin explicaciones de por qué funcionan, sin subtítulos, sin comentarios. Solo el hook en sí.
 
-**HOOK 1 — AFIRMACIÓN CONTRAINTUITIVA**
-Una declaración que contradice lo que el avatar cree que es verdad. No una pregunta. Una afirmación directa que genera fricción cognitiva inmediata.
-*Por qué funciona (Schwartz):* [Explica el mecanismo psicológico en 1-2 líneas]
+MANDATO DE VARIEDAD: Cada hook usa un mecanismo psicológico DIFERENTE. Queda terminantemente prohibido repetir el mismo enfoque. Tenés libertad total para elegir qué técnicas usar — no te limitás a las obvias.
 
-**HOOK 2 — DATO ESPECÍFICO QUE INCOMODA**
-Un número, porcentaje, o estadística que hace que la situación actual del avatar se sienta urgente o injusta. Específico, no vago.
-*Por qué funciona:* [Mecanismo]
+ARSENAL DISPONIBLE (elegí 5 distintos, no siempre los mismos):
+Contraintuitivo · dato que incomoda · micro-historia (empieza en la acción) · pregunta visceral · paradoja aparente · confesión inesperada · autoridad sin pedir permiso · comparación inesperada pero válida · rotura de patrón · promesa específica sin revelar el cómo · provocación al ego · urgencia implícita · reencuadre radical · declaración polémica defendible · bucle abierto irresistible · cualquier técnica que no está en esta lista pero que funciona mejor para este tema.
 
-**HOOK 3 — HISTORIA EN UNA LÍNEA**
-Un micro-relato que coloca al avatar en el medio de una situación familiar y dolorosa antes de que pueda pensar en scrollear. Técnica Halbert: empieza en la acción.
-*Por qué funciona:* [Mecanismo]
+VARIACIÓN DE FORMA OBLIGATORIA: Variá drásticamente longitud, estructura y tono entre los 5. Uno puede ser 4 palabras. Otro puede ser 3 líneas. Uno puede ser una afirmación. Otro puede ser una historia. No hay formato fijo. Lo que no cambia: cada uno debe ser imposible de ignorar.
 
-**HOOK 4 — LA PREGUNTA QUE NO PUEDEN IGNORAR**
-No cualquier pregunta. Una que toca una inseguridad o deseo que el avatar tiene pero no ha verbalizado. Si se la hacen a sí mismos, se quedan a escuchar la respuesta.
-*Por qué funciona:* [Mecanismo]
+PLATAFORMA: ${platform} — ${
+  platform === 'instagram' ? 'primera línea de caption o texto del primer frame de reel/carrusel' :
+  platform === 'tiktok' ? 'primeras palabras habladas o texto de apertura que aparece en pantalla' :
+  platform === 'twitter' ? 'tweet standalone o primer tweet de un hilo' :
+  'primera línea visible del post antes del botón "ver más"'
+}.
 
-**HOOK 5 — EL PATRÓN ROTO**
-Algo que no tiene sentido hasta que sí lo tiene. Puede ser una comparación inesperada, una paradoja aparente, o un formato visual/textual que interrumpe el patrón normal del feed.
-*Por qué funciona:* [Mecanismo]
-
-PARA CADA HOOK: Adapta el formato nativo de ${platform} (longitud, tono, si va en texto, subtítulo de video, caption, o thread). Sé específico con la plataforma — un hook de LinkedIn no funciona en TikTok y viceversa.`,
+Entrega exactamente 5 hooks numerados (1. 2. 3. 4. 5.). Nada más.`,
           consciousnessLevel: level,
           brandProfile: activeBrand,
           moduleType: 'hooks'

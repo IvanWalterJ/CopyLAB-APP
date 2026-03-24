@@ -9,7 +9,7 @@ import { useRouter } from 'next/navigation';
 import {
   IconDashboard, IconBolt, IconMegaphone, IconLayout, IconVideo,
   IconMail, IconGrid, IconDocument, IconStar, IconUser,
-  IconSettings, IconLogout, IconChevronRight, IconCoins
+  IconSettings, IconLogout, IconChevronRight, IconCoins, IconCalendar
 } from '@/components/icons';
 
 const generatorModules = [
@@ -23,6 +23,7 @@ const generatorModules = [
 ];
 
 const libraryModules = [
+  { href: '/calendar', icon: IconCalendar, label: 'Canvas de Contenido' },
   { href: '/history', icon: IconDocument, label: 'Mis Copys' },
   { href: '/swipe', icon: IconStar, label: 'Banco de Inspiración' },
 ];
@@ -116,7 +117,7 @@ export default function Sidebar() {
         </div>
 
         {/* Biblioteca */}
-        <p className="text-[10px] font-bold text-text-muted uppercase tracking-widest mb-2 px-2 pt-1">Biblioteca</p>
+        <p className="text-[10px] font-bold text-text-muted uppercase tracking-widest mb-2 px-2 pt-1">Planificación</p>
         {libraryModules.map(renderNavItem)}
       </nav>
 

@@ -6,10 +6,10 @@ import { useApp } from '@/lib/context';
 import {
   IconBot, IconArrowRight, IconSparkles, IconCheckCircle, IconLoader,
   IconBuilding, IconUsers, IconTarget, IconMegaphone, IconSkipForward,
-  IconChevronRight, IconBolt
+  IconChevronRight, IconBolt, IconCheck
 } from '@/components/icons';
 
-// ─── Questions ───────────────────────────────────────────────────────────────
+// ─── Config ──────────────────────────────────────────────────────────────────
 
 const PHASES = [
   { label: 'Negocio', icon: IconBuilding, color: 'text-brand-primary', bg: 'bg-brand-primary/10', border: 'border-brand-primary/30' },
@@ -19,26 +19,37 @@ const PHASES = [
 ];
 
 const QUESTIONS = [
-  // Fase 0: Negocio (0-2)
   "¿Cuál es el nombre de tu marca o negocio, y en qué industria o nicho opera?",
   "¿Qué hace exactamente tu producto o servicio? En tus propias palabras: ¿qué problema resuelve y para quién?",
   "¿Cuánto cuesta tu oferta principal y cuál es la transformación que prometes? Cuéntame el 'antes' y el 'después' de tus clientes.",
-  // Fase 1: Avatar (3-6)
   "Descríbeme a tu cliente ideal: ¿qué edad tiene aproximadamente, cuál es su situación de vida y qué está experimentando en este momento?",
   "¿Cuáles son los 3 dolores o frustraciones más profundas de ese cliente? Intenta usar las mismas palabras que él usaría para describirlos.",
   "¿Qué es lo que más desea lograr? ¿Cuál es el resultado o transformación que sueña con conseguir?",
   "¿Qué le impide comprar? ¿Cuáles son sus principales objeciones, miedos o excusas para no dar el paso?",
-  // Fase 2: Diferenciación (7-9)
   "¿Quiénes son tus principales competidores o alternativas en el mercado? ¿Por qué te eligen a ti sobre ellos?",
   "¿Cuál es tu ventaja o mecanismo único? ¿Qué tiene tu método o producto que ningún otro tiene igual?",
   "¿Tienes garantía o casos de éxito concretos que puedas compartir? Cuéntame resultados reales, números, testimonios.",
-  // Fase 3: Voz de Marca (10-11)
   "¿Cómo describirías la personalidad de tu marca? ¿Seria o divertida? ¿Técnica o cercana? ¿Formal o informal?",
   "¿Hay palabras, frases o estilos de comunicación que JAMÁS usarías en tu marca? ¿Algo que simplemente no te represente?",
 ];
 
 const PHASE_RANGES = [[0, 2], [3, 6], [7, 9], [10, 11]];
 const TOTAL = QUESTIONS.length;
+
+// Questions where we show chip selectors (intel-powered)
+const CHIPS_QUESTIONS: Record<number, keyof OnboardingIntel> = {
+  4: 'pains',
+  5: 'desires',
+  6: 'objections',
+};
+
+const PERSONALITY_ARCHETYPES = [
+  { id: 'directo', label: 'Directo y sin filtros', emoji: '⚡', description: 'Llama las cosas por su nombre. Sin rodeos, sin eufemismos. La gente lo respeta o lo deja, y está bien.' },
+  { id: 'experto', label: 'Experto técnico', emoji: '🎯', description: 'Autoridad en el tema. Datos, metodología, profundidad. La credibilidad es la moneda.' },
+  { id: 'mentor', label: 'Mentor cercano', emoji: '🤝', description: 'Cálido, empático, camina junto al cliente. Hace que el proceso se sienta acompañado.' },
+  { id: 'rebelde', label: 'Rebelde del nicho', emoji: '🔥', description: 'Cuestiona lo establecido. Dice lo que otros no se animan. Propone lo diferente.' },
+  { id: 'aspiracional', label: 'Líder aspiracional', emoji: '🌟', description: 'Inspira y eleva. Muestra el camino posible. La audiencia quiere ser como la marca.' },
+];
 
 function getPhaseIndex(qIndex: number) {
   for (let i = 0; i < PHASE_RANGES.length; i++) {
@@ -55,6 +66,13 @@ type AppPhase = 'welcome' | 'chat' | 'analyzing' | 'preview' | 'saving';
 interface Message {
   role: 'agent' | 'user';
   content: string;
+}
+
+interface OnboardingIntel {
+  pains: string[];
+  desires: string[];
+  objections: string[];
+  mechanisms: string[];
 }
 
 interface GeneratedProfile {
@@ -152,6 +170,22 @@ function TypingIndicator() {
   );
 }
 
+function IntelLoadingIndicator() {
+  return (
+    <div className="flex items-start gap-3 opacity-60">
+      <div className="w-8 h-8 rounded-full bg-brand-primary/20 border border-brand-primary/30 flex items-center justify-center flex-shrink-0">
+        <IconBot size={14} className="text-brand-primary" />
+      </div>
+      <div className="bg-elevated border border-border-subtle rounded-2xl rounded-tl-sm px-4 py-3">
+        <div className="flex items-center gap-2">
+          <IconLoader size={12} className="text-brand-primary animate-spin" />
+          <span className="text-[11px] text-text-muted">Investigando tu mercado...</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function ProfileChips({ items, color }: { items: string[]; color: string }) {
   return (
     <div className="flex flex-wrap gap-1.5">
@@ -160,6 +194,102 @@ function ProfileChips({ items, color }: { items: string[]; color: string }) {
           {item}
         </span>
       ))}
+    </div>
+  );
+}
+
+// Chip suggestion selector for multi-select questions
+function ChipSelector({
+  suggestions,
+  selected,
+  onToggle,
+  maxSelect = 3,
+}: {
+  suggestions: string[];
+  selected: string[];
+  onToggle: (chip: string) => void;
+  maxSelect?: number;
+}) {
+  const isMaxed = selected.length >= maxSelect;
+
+  return (
+    <div className="space-y-2">
+      <p className="text-[11px] text-text-muted font-semibold uppercase tracking-wider flex items-center gap-1.5">
+        <span className="w-1.5 h-1.5 rounded-full bg-brand-primary/60 inline-block" />
+        Sugerencias de mercado — click para seleccionar (máx. {maxSelect})
+      </p>
+      <div className="flex flex-wrap gap-2">
+        {suggestions.map((chip, i) => {
+          const isSelected = selected.includes(chip);
+          const isDisabled = isMaxed && !isSelected;
+          return (
+            <button
+              key={i}
+              onClick={() => !isDisabled && onToggle(chip)}
+              className={`text-xs px-3 py-1.5 rounded-full border transition-all duration-150 text-left flex items-center gap-1.5 ${
+                isSelected
+                  ? 'bg-brand-primary/20 border-brand-primary/50 text-brand-primary font-medium'
+                  : isDisabled
+                  ? 'bg-surface border-border-subtle text-text-muted opacity-40 cursor-not-allowed'
+                  : 'bg-elevated border-border-subtle text-text-secondary hover:border-brand-primary/30 hover:text-text-primary cursor-pointer'
+              }`}
+            >
+              {isSelected && <IconCheck size={10} className="flex-shrink-0" />}
+              {chip}
+            </button>
+          );
+        })}
+      </div>
+      {selected.length > 0 && (
+        <p className="text-[10px] text-brand-primary/70">
+          {selected.length}/{maxSelect} seleccionados · Podés escribir más o enviar tal como está
+        </p>
+      )}
+    </div>
+  );
+}
+
+// Personality archetype selector for Q10
+function PersonalitySelector({
+  onSelect,
+}: {
+  onSelect: (description: string) => void;
+}) {
+  const [active, setActive] = useState<string | null>(null);
+
+  return (
+    <div className="space-y-2">
+      <p className="text-[11px] text-text-muted font-semibold uppercase tracking-wider flex items-center gap-1.5">
+        <span className="w-1.5 h-1.5 rounded-full bg-purple-400/60 inline-block" />
+        Arquetipos — elegí el que más te representa
+      </p>
+      <div className="grid grid-cols-1 gap-2">
+        {PERSONALITY_ARCHETYPES.map(p => (
+          <button
+            key={p.id}
+            onClick={() => {
+              setActive(p.id);
+              onSelect(p.description);
+            }}
+            className={`p-3 rounded-xl border text-left transition-all duration-150 flex items-start gap-3 ${
+              active === p.id
+                ? 'bg-purple-400/10 border-purple-400/40 shadow-sm'
+                : 'bg-elevated border-border-subtle hover:border-purple-400/20 hover:bg-purple-400/5'
+            }`}
+          >
+            <span className="text-lg leading-none mt-0.5">{p.emoji}</span>
+            <div>
+              <p className={`text-sm font-semibold ${active === p.id ? 'text-purple-400' : 'text-text-primary'}`}>{p.label}</p>
+              <p className="text-[11px] text-text-muted mt-0.5 leading-snug">{p.description}</p>
+            </div>
+            {active === p.id && (
+              <div className="ml-auto flex-shrink-0">
+                <IconCheckCircle size={16} className="text-purple-400" />
+              </div>
+            )}
+          </button>
+        ))}
+      </div>
     </div>
   );
 }
@@ -179,23 +309,29 @@ export default function OnboardingPage() {
   const [generatedProfile, setGeneratedProfile] = useState<GeneratedProfile | null>(null);
   const [synthesisError, setSynthesisError] = useState<string | null>(null);
 
+  // Intel state
+  const [intel, setIntel] = useState<OnboardingIntel | null>(null);
+  const [isLoadingIntel, setIsLoadingIntel] = useState(false);
+  const [selectedChips, setSelectedChips] = useState<string[]>([]);
+
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // No redirect — users with existing brands can also create new ones via onboarding
-
-  // Scroll to bottom on new messages
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages, isAgentTyping]);
+  }, [messages, isAgentTyping, isLoadingIntel]);
 
-  // Focus input when agent done typing
   useEffect(() => {
     if (!isAgentTyping && appPhase === 'chat') {
       setTimeout(() => inputRef.current?.focus(), 100);
     }
   }, [isAgentTyping, appPhase]);
+
+  // Clear selected chips when moving to a new question
+  useEffect(() => {
+    setSelectedChips([]);
+  }, [currentQ]);
 
   const addAgentMessage = useCallback((text: string, delay = 600) => {
     setIsAgentTyping(true);
@@ -205,31 +341,70 @@ export default function OnboardingPage() {
     }, delay);
   }, []);
 
+  const loadIntel = useCallback(async (q0Answer: string, q1Answer: string) => {
+    setIsLoadingIntel(true);
+    try {
+      const res = await fetch('/api/onboarding-intel', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ q0Answer, q1Answer }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setIntel(data);
+      }
+    } catch {
+      // Silent fail — chips are enhancement, not requirement
+    } finally {
+      setIsLoadingIntel(false);
+    }
+  }, []);
+
   const startChat = useCallback(() => {
     setAppPhase('chat');
     addAgentMessage(QUESTIONS[0], 800);
   }, [addAgentMessage]);
 
-  const handleSubmit = useCallback(async () => {
-    const trimmed = input.trim();
-    if (!trimmed || isAgentTyping) return;
+  const toggleChip = useCallback((chip: string) => {
+    setSelectedChips(prev => {
+      if (prev.includes(chip)) return prev.filter(c => c !== chip);
+      if (prev.length >= 3) return prev;
+      return [...prev, chip];
+    });
+  }, []);
 
-    const userMessage: Message = { role: 'user', content: trimmed };
+  const buildChipAnswer = useCallback((chips: string[], customText: string): string => {
+    const parts: string[] = [...chips];
+    if (customText.trim()) parts.push(customText.trim());
+    return parts.join(' | ');
+  }, []);
+
+  const handleSubmit = useCallback(async () => {
+    const hasChips = selectedChips.length > 0;
+    const trimmed = input.trim();
+    if (!hasChips && !trimmed) return;
+    if (isAgentTyping) return;
+
+    const finalAnswer = hasChips ? buildChipAnswer(selectedChips, trimmed) : trimmed;
+
+    const userMessage: Message = { role: 'user', content: finalAnswer };
     setMessages(prev => [...prev, userMessage]);
     setInput('');
-    const newAnswers = [...answers, trimmed];
+    const newAnswers = [...answers, finalAnswer];
     setAnswers(newAnswers);
 
-    const nextQ = currentQ + 1;
+    // Trigger intel load after Q1 is answered
+    if (currentQ === 1 && newAnswers.length >= 2) {
+      loadIntel(newAnswers[0], newAnswers[1]);
+    }
 
+    const nextQ = currentQ + 1;
     if (nextQ < TOTAL) {
       setCurrentQ(nextQ);
-      // Small pause before agent responds
       setTimeout(() => {
         addAgentMessage(QUESTIONS[nextQ], 700);
       }, 300);
     } else {
-      // All questions answered — synthesize
       setAppPhase('analyzing');
       const conversation: Message[] = [];
       QUESTIONS.forEach((q, i) => {
@@ -252,7 +427,7 @@ export default function OnboardingPage() {
         setAppPhase('preview');
       }
     }
-  }, [input, isAgentTyping, answers, currentQ, addAgentMessage]);
+  }, [input, isAgentTyping, answers, currentQ, addAgentMessage, selectedChips, buildChipAnswer, loadIntel]);
 
   const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -280,7 +455,6 @@ export default function OnboardingPage() {
     }
   }, [generatedProfile, refreshBrands, setActiveBrand, router]);
 
-  // Cleanup
   useEffect(() => () => {
     if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
   }, []);
@@ -289,32 +463,36 @@ export default function OnboardingPage() {
   const phase = PHASES[phaseIndex];
   const progress = Math.round(((currentQ) / TOTAL) * 100);
 
-  // ─── RENDER: Welcome ──────────────────────────────────────────────────────
+  const currentChipKey = CHIPS_QUESTIONS[currentQ];
+  const currentSuggestions = currentChipKey && intel ? intel[currentChipKey] as string[] : [];
+  const isPersonalityQ = currentQ === 10;
+  const showChips = currentSuggestions.length > 0 && !isAgentTyping;
+  const showPersonality = isPersonalityQ && !isAgentTyping;
+  const canSubmit = (selectedChips.length > 0 || input.trim().length > 0) && !isAgentTyping;
+
+  // ─── RENDER: Welcome ────────────────────────────────────────────────────────
 
   if (appPhase === 'welcome') {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-6">
         <div className="max-w-lg w-full text-center space-y-8">
-          {/* Logo */}
           <div className="flex justify-center">
             <div className="w-16 h-16 bg-brand-primary/15 border border-brand-primary/30 rounded-2xl flex items-center justify-center">
               <IconSparkles size={28} className="text-brand-primary" />
             </div>
           </div>
 
-          {/* Headline */}
           <div className="space-y-3">
-            <p className="text-xs font-bold text-brand-primary uppercase tracking-widest">Agente de Descubrimiento de Marca</p>
+            <p className="text-xs font-bold text-brand-primary uppercase tracking-widest">Agente Investigador de Marca</p>
             <h1 className="text-3xl font-black text-text-primary leading-tight">
               Vamos a construir tu<br />
               <span className="text-brand-primary">perfil estratégico</span>
             </h1>
             <p className="text-text-secondary text-sm leading-relaxed max-w-sm mx-auto">
-              Nuestro agente te hará 12 preguntas clave sobre tu negocio, cliente y diferenciadores. Al final, genera automáticamente tu perfil de marca completo.
+              El agente te guía con preguntas inteligentes y sugerencias basadas en investigación real de tu mercado. No hace falta que sepas de copy ni de marketing.
             </p>
           </div>
 
-          {/* Steps preview */}
           <div className="grid grid-cols-2 gap-3 text-left">
             {PHASES.map((p, i) => {
               const Icon = p.icon;
@@ -335,7 +513,12 @@ export default function OnboardingPage() {
             })}
           </div>
 
-          {/* CTA */}
+          <div className="bg-brand-primary/5 border border-brand-primary/20 rounded-xl p-3 text-left">
+            <p className="text-[11px] text-brand-primary/80 leading-relaxed">
+              <span className="font-bold">¿No sabés bien quién es tu cliente?</span> No hay problema. El agente investiga tu mercado en tiempo real y te da opciones concretas para elegir.
+            </p>
+          </div>
+
           <div className="space-y-3">
             <button
               onClick={startChat}
@@ -357,7 +540,7 @@ export default function OnboardingPage() {
     );
   }
 
-  // ─── RENDER: Chat ─────────────────────────────────────────────────────────
+  // ─── RENDER: Chat ───────────────────────────────────────────────────────────
 
   if (appPhase === 'chat') {
     const PhaseIcon = phase.icon;
@@ -371,16 +554,14 @@ export default function OnboardingPage() {
             </div>
             <div>
               <p className="text-xs font-bold text-text-primary">Agente CopyLab</p>
-              <p className="text-[10px] text-text-muted">Descubrimiento estratégico de marca</p>
+              <p className="text-[10px] text-text-muted">Investigador estratégico de marca</p>
             </div>
           </div>
           <div className="flex items-center gap-3">
-            {/* Phase badge */}
             <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-[11px] font-semibold ${phase.border} ${phase.bg} ${phase.color}`}>
               <PhaseIcon size={11} />
               {phase.label}
             </div>
-            {/* Progress */}
             <div className="text-[11px] text-text-muted font-mono">
               {currentQ}/{TOTAL}
             </div>
@@ -389,10 +570,7 @@ export default function OnboardingPage() {
 
         {/* Progress bar */}
         <div className="h-0.5 bg-surface flex-shrink-0">
-          <div
-            className="h-full bg-brand-primary transition-all duration-500"
-            style={{ width: `${progress}%` }}
-          />
+          <div className="h-full bg-brand-primary transition-all duration-500" style={{ width: `${progress}%` }} />
         </div>
 
         {/* Messages */}
@@ -403,45 +581,80 @@ export default function OnboardingPage() {
               : <UserBubble key={i} text={msg.content} />
           )}
           {isAgentTyping && <TypingIndicator />}
+          {isLoadingIntel && !isAgentTyping && <IntelLoadingIndicator />}
           <div ref={messagesEndRef} />
         </div>
 
-        {/* Input */}
-        <div className="border-t border-border-subtle p-4 flex-shrink-0">
-          <div className="max-w-2xl mx-auto flex gap-3 items-end">
-            <textarea
-              ref={inputRef}
-              value={input}
-              onChange={e => setInput(e.target.value)}
-              onKeyDown={handleKeyDown}
-              disabled={isAgentTyping}
-              placeholder={isAgentTyping ? 'El agente está escribiendo...' : 'Escribe tu respuesta...'}
-              rows={1}
-              className="flex-1 bg-elevated border border-border-subtle rounded-xl px-4 py-3 text-sm text-text-primary placeholder-text-muted resize-none focus:outline-none focus:border-brand-primary/50 transition-colors disabled:opacity-50"
-              style={{ minHeight: '48px', maxHeight: '120px' }}
-              onInput={e => {
-                const el = e.target as HTMLTextAreaElement;
-                el.style.height = 'auto';
-                el.style.height = Math.min(el.scrollHeight, 120) + 'px';
-              }}
-            />
-            <button
-              onClick={handleSubmit}
-              disabled={!input.trim() || isAgentTyping}
-              className="w-11 h-11 bg-brand-primary hover:bg-brand-primary/90 disabled:opacity-40 disabled:cursor-not-allowed rounded-xl flex items-center justify-center transition-all flex-shrink-0"
-            >
-              <IconChevronRight size={18} className="text-white" />
-            </button>
+        {/* Smart Input Area */}
+        <div className="border-t border-border-subtle p-4 flex-shrink-0 space-y-3">
+          <div className="max-w-2xl mx-auto space-y-3">
+
+            {/* Chip suggestions for pains/desires/objections */}
+            {showChips && (
+              <div className="bg-elevated/50 border border-border-subtle rounded-xl p-3">
+                <ChipSelector
+                  suggestions={currentSuggestions}
+                  selected={selectedChips}
+                  onToggle={toggleChip}
+                  maxSelect={3}
+                />
+              </div>
+            )}
+
+            {/* Personality archetypes for Q10 */}
+            {showPersonality && (
+              <div className="bg-elevated/50 border border-border-subtle rounded-xl p-3">
+                <PersonalitySelector onSelect={desc => setInput(desc)} />
+              </div>
+            )}
+
+            {/* Text input row */}
+            <div className="flex gap-3 items-end">
+              <textarea
+                ref={inputRef}
+                value={input}
+                onChange={e => setInput(e.target.value)}
+                onKeyDown={handleKeyDown}
+                disabled={isAgentTyping}
+                placeholder={
+                  isAgentTyping
+                    ? 'El agente está escribiendo...'
+                    : showChips
+                    ? 'Chips seleccionados o escribe algo propio...'
+                    : isPersonalityQ
+                    ? 'Elegí un arquetipo arriba o describí con tus palabras...'
+                    : 'Escribe tu respuesta...'
+                }
+                rows={1}
+                className="flex-1 bg-elevated border border-border-subtle rounded-xl px-4 py-3 text-sm text-text-primary placeholder-text-muted resize-none focus:outline-none focus:border-brand-primary/50 transition-colors disabled:opacity-50"
+                style={{ minHeight: '48px', maxHeight: '120px' }}
+                onInput={e => {
+                  const el = e.target as HTMLTextAreaElement;
+                  el.style.height = 'auto';
+                  el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+                }}
+              />
+              <button
+                onClick={handleSubmit}
+                disabled={!canSubmit}
+                className="w-11 h-11 bg-brand-primary hover:bg-brand-primary/90 disabled:opacity-40 disabled:cursor-not-allowed rounded-xl flex items-center justify-center transition-all flex-shrink-0"
+              >
+                <IconChevronRight size={18} className="text-white" />
+              </button>
+            </div>
           </div>
-          <p className="text-center text-[10px] text-text-muted mt-2">
-            Enter para enviar · Shift+Enter para nueva línea
+
+          <p className="text-center text-[10px] text-text-muted max-w-2xl mx-auto">
+            {showChips
+              ? 'Seleccioná chips del mercado · podés agregar los tuyos en el campo · Enter para enviar'
+              : 'Enter para enviar · Shift+Enter para nueva línea'}
           </p>
         </div>
       </div>
     );
   }
 
-  // ─── RENDER: Analyzing ────────────────────────────────────────────────────
+  // ─── RENDER: Analyzing ──────────────────────────────────────────────────────
 
   if (appPhase === 'analyzing') {
     return (
@@ -472,7 +685,7 @@ export default function OnboardingPage() {
     );
   }
 
-  // ─── RENDER: Preview ──────────────────────────────────────────────────────
+  // ─── RENDER: Preview ────────────────────────────────────────────────────────
 
   if (appPhase === 'preview' || appPhase === 'saving') {
     if (synthesisError) {
@@ -494,7 +707,6 @@ export default function OnboardingPage() {
     return (
       <div className="min-h-screen bg-background py-8 px-4">
         <div className="max-w-2xl mx-auto space-y-6">
-          {/* Header */}
           <div className="text-center space-y-2">
             <div className="flex justify-center">
               <div className="w-12 h-12 bg-emerald-400/15 border border-emerald-400/30 rounded-xl flex items-center justify-center">
@@ -505,7 +717,6 @@ export default function OnboardingPage() {
             <p className="text-text-secondary text-sm">Revisa el análisis del agente y activa tu perfil.</p>
           </div>
 
-          {/* Card: Marca */}
           <div className="bg-surface border border-border-subtle rounded-2xl p-5 space-y-3">
             <div className="flex items-center gap-2">
               <IconBuilding size={14} className="text-brand-primary" />
@@ -523,7 +734,6 @@ export default function OnboardingPage() {
             )}
           </div>
 
-          {/* Card: Avatar */}
           <div className="bg-surface border border-border-subtle rounded-2xl p-5 space-y-4">
             <div className="flex items-center gap-2">
               <IconUsers size={14} className="text-emerald-400" />
@@ -556,7 +766,6 @@ export default function OnboardingPage() {
             )}
           </div>
 
-          {/* Card: Diferenciación */}
           <div className="bg-surface border border-border-subtle rounded-2xl p-5 space-y-3">
             <div className="flex items-center gap-2">
               <IconTarget size={14} className="text-amber-400" />
@@ -583,15 +792,8 @@ export default function OnboardingPage() {
                 <p className="text-text-secondary text-sm">{p.product_mechanism}</p>
               </div>
             )}
-            {p.competitors && (
-              <div>
-                <p className="text-[11px] text-text-muted font-semibold uppercase tracking-wider mb-1">Competidores</p>
-                <p className="text-text-muted text-sm">{p.competitors}</p>
-              </div>
-            )}
           </div>
 
-          {/* Card: Voz de Marca */}
           <div className="bg-surface border border-border-subtle rounded-2xl p-5 space-y-4">
             <div className="flex items-center gap-2">
               <IconMegaphone size={14} className="text-purple-400" />
@@ -608,10 +810,7 @@ export default function OnboardingPage() {
                 Formalidad: {p.formality_level}/10
               </p>
               <div className="w-full h-1.5 bg-elevated rounded-full">
-                <div
-                  className="h-full bg-purple-400 rounded-full"
-                  style={{ width: `${(p.formality_level / 10) * 100}%` }}
-                />
+                <div className="h-full bg-purple-400 rounded-full" style={{ width: `${(p.formality_level / 10) * 100}%` }} />
               </div>
             </div>
             {p.forbidden_words?.length > 0 && (
@@ -622,7 +821,6 @@ export default function OnboardingPage() {
             )}
           </div>
 
-          {/* Actions */}
           <div className="space-y-3 pb-8">
             <button
               onClick={handleSaveProfile}

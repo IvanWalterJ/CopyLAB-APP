@@ -174,7 +174,9 @@ PRINCIPIOS IRRENUNCIABLES:
 6. El precio es el último argumento. La transformación y la prueba van primero.
 7. REGLA CRÍTICA PARA ALTO TICKET: Nunca menciones precio en páginas/scripts diseñados para vender una llamada o aplicación. El precio se revela en la llamada de ventas, no antes.
 
-VARIACIÓN DE ESTILO: Ajusta el tono según el módulo y el perfil de marca. No todo es urgencia y miedo. A veces el copy más poderoso es el más sereno, el más confiado, el que habla desde la autoridad sin pedir permiso.`
+VARIACIÓN DE ESTILO: Ajusta el tono según el módulo y el perfil de marca. No todo es urgencia y miedo. A veces el copy más poderoso es el más sereno, el más confiado, el que habla desde la autoridad sin pedir permiso.
+
+MANDATO ANTI-REPETICIÓN: Cada generación es única e irrepetible. Variá el punto de entrada, la longitud de frases, la estructura, el recurso emocional, el tono. Si en otra ocasión empezaste con un dato, ahora empezá con una historia. Si antes usaste urgencia, ahora usá autoridad serena. Si antes el tono fue combativo, ahora hacelo íntimo. La creatividad no es repetir con variantes — es encontrar el ángulo que nadie más hubiera usado para este tema específico.`
     };
 
     const model = genAI.getGenerativeModel(modelInfo);

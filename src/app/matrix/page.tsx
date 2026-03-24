@@ -156,14 +156,14 @@ Ahora escribe el copy para este ángulo sobre: "${topic}".
 Respeta estrictamente el formato de output indicado arriba.`;
   }).join('\n\n');
 
-  return `Genera la Matriz Multi-Ángulo para la oferta/tema: "${topic}".
+  return `Genera la Matriz Multi-Ángulo para: "${topic}".
+
+REGLA DE ORO: Entrega SOLO el copy. Cero explicaciones de por qué funciona, cero notas técnicas, cero meta-comentarios, cero frases como "este ángulo funciona porque...". El output es copy puro en el formato especificado.
+
+CREATIVIDAD DESBLOQUEADA: Las instrucciones de cada ángulo son un punto de partida, no una camisa de fuerza. Si encontrás una forma más potente de ejecutar ese ángulo para ESTE tema específico, usala. Lo que no cambia: el mecanismo psicológico central. Lo que sí puede variar: estructura, punto de entrada, tono, longitud, recurso narrativo.
 
 FORMATO DE OUTPUT OBLIGATORIO:
 ${formatInstructions}
-
-IMPORTANTE: Todo el contenido generado DEBE respetar el formato indicado. No generes texto corrido genérico — adapta cada ángulo al formato especificado.
-
-Por cada ángulo seleccionado, recibirás las instrucciones específicas de técnica y estructura. Sigue cada una al pie de la letra. La calidad de cada ángulo depende de qué tan bien apliques la técnica indicada — no generes variaciones genéricas del mismo mensaje, cada ángulo debe sentirse radicalmente diferente en tono, estructura y mecanismo psicológico.
 
 ${angleBlocks}`;
 }
