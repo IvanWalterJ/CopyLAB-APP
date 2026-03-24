@@ -73,7 +73,7 @@ function getMonthDays(year: number, month: number): (Date | null)[] {
   const lastDay = new Date(year, month + 1, 0);
 
   // Monday-based week: Mon=0 ... Sun=6
-  let startPad = (firstDay.getDay() + 6) % 7;
+  const startPad = (firstDay.getDay() + 6) % 7;
   const totalDays = lastDay.getDate();
 
   const cells: (Date | null)[] = [];
